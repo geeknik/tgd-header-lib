@@ -25,6 +25,7 @@ more documentation.
 #include <zlib.h>
 
 #include <algorithm>
+#include <string>
 #include <array>
 #include <cassert>
 #include <cstring>
