@@ -90,7 +90,7 @@ namespace tgd_header {
             );
 
             if (result != Z_OK) {
-                throw std::runtime_error{std::string{"failed to compress data: "} + zError(result)};
+                throw zlib_error{std::string{"failed to compress data: "} + zError(result)};
             }
 
             m_wire_content_length = output_size;
@@ -110,11 +110,11 @@ namespace tgd_header {
             );
 
             if (result != Z_OK) {
-                throw std::runtime_error{std::string{"failed to uncompress data: "} + zError(result)};
+                throw zlib_error{std::string{"failed to uncompress data: "} + zError(result)};
             }
 
             if (raw_size != m_content_length) {
-                throw std::runtime_error{std::string{"wrong original size"}};
+                throw format_error{"wrong original size on compressed data"};
             }
 
             m_content = buffer{mb};
@@ -221,7 +221,7 @@ namespace tgd_header {
         void set_name(const char* name) {
             const auto length = std::strlen(name) + 1;
             if (length >= std::numeric_limits<name_length_type>::max()) {
-                throw std::runtime_error{"name too long"};
+                throw format_error{"name too long"};
             }
             set_name(name, length);
         }
@@ -247,7 +247,7 @@ namespace tgd_header {
         void set_content(const char* content) {
             const auto length = std::strlen(content) + 1;
             if (length >= std::numeric_limits<content_length_type>::max()) {
-                throw std::runtime_error{"content too long"};
+                throw format_error{"content too long"};
             }
             set_content(content, length);
         }

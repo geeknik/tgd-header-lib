@@ -32,6 +32,14 @@ namespace tgd_header {
 
     }; // format_error
 
+    struct zlib_error : public std::runtime_error {
+
+        explicit zlib_error(const std::string& what) :
+            runtime_error(what) {
+        }
+
+    }; // zlib_error
+
 } // namespace tgd_header
 
 #endif // TGD_HEADER_EXCEPTIONS_HPP
