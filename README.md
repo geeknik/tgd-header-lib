@@ -16,6 +16,13 @@ compiler.
 Simply include the header files from the `include` directory.
 
 
+## Dependencies
+
+The [zlib](https://www.zlib.net/) library is needed. (Debian/Ubuntu users
+install package `zlib1g-dev`, Fedora/CentOS/openSUSE users install
+`zlib-devel`.)
+
+
 ## Tests
 
 To build and run the tests:
