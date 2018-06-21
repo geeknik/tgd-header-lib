@@ -51,12 +51,6 @@ namespace tgd_header {
             m_data.reset(new char[size]);
         }
 
-        mutable_buffer(const mutable_buffer&) = delete;
-        const mutable_buffer& operator=(const mutable_buffer&) = delete;
-
-        mutable_buffer(mutable_buffer&&) = delete;
-        const mutable_buffer& operator=(mutable_buffer&&) = delete;
-
         char* data() const noexcept {
             return m_data.get();
         }
