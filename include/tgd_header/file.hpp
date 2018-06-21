@@ -108,7 +108,7 @@ namespace tgd_header {
                 other.m_fd = -1;
             }
 
-            const file& operator=(file&& other) noexcept {
+            file& operator=(file&& other) noexcept {
                 m_fd = other.m_fd;
                 other.m_fd = -1;
                 return *this;
