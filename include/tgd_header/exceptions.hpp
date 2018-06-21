@@ -22,11 +22,11 @@ namespace tgd_header {
 
     struct format_error : public std::runtime_error {
 
-        format_error(const char* what) :
+        explicit format_error(const char* what) :
             runtime_error(what) {
         }
 
-        format_error(const std::string& what) :
+        explicit format_error(const std::string& what) :
             runtime_error(what) {
         }
 

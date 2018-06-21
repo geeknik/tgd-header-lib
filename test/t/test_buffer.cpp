@@ -41,7 +41,7 @@ TEST_CASE("Non-managed buffer (explicit)") {
 }
 
 TEST_CASE("Managed pre-allocated buffer") {
-    char* a = new char[20];
+    auto a = new char[20];
     tgd_header::buffer b{a, 20, true};
 
     REQUIRE(b);

@@ -42,7 +42,7 @@ namespace tgd_header {
 
         explicit mmap_source(const std::string& filename) :
             m_filename(filename),
-            m_fd(::open(filename.c_str(), O_RDONLY)) {
+            m_fd(::open(filename.c_str(), O_RDONLY | O_CLOEXEC)) { // NOLINT(cppcoreguidelines-pro-type-vararg,hicpp-signed-bitwise,hicpp-vararg)
             if (m_fd < 0) {
                 std::runtime_error{"Can't open file"};
             }

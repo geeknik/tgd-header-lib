@@ -61,7 +61,9 @@ static void write_layer(const std::string& filename, tgd_header::file_sink& outp
     if (f.second == "tgd") {
         output_file.write(read_file(filename));
         return;
-    } else if (f.second == "png") {
+    }
+
+    if (f.second == "png") {
         layer.set_content_type(tgd_header::layer_content_type::png);
     } else if (f.second == "jpg") {
         layer.set_content_type(tgd_header::layer_content_type::jpeg);

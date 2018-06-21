@@ -41,7 +41,7 @@ namespace tgd_header {
          * Construct buffer with specified size. This will allocate the
          * needed memory using new.
          */
-        mutable_buffer(std::size_t size) :
+        explicit mutable_buffer(std::size_t size) :
             m_size(size) {
             m_data = new char[size];
         }
@@ -175,7 +175,7 @@ namespace tgd_header {
          * managed, release the memory.
          */
         void clear() noexcept {
-            if (m_size & mask) {
+            if ((m_size & mask) != 0u) {
                 delete[] m_data;
             }
             m_data = nullptr;
@@ -190,7 +190,7 @@ namespace tgd_header {
         }
 
         /// Does this buffer contain some data.
-        operator bool() const noexcept {
+        explicit operator bool() const noexcept {
             return m_data != nullptr;
         }
 

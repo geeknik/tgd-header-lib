@@ -33,8 +33,8 @@ class matcher {
 
 public:
 
-    matcher(const std::string& name, tgd_header::layer_content_type type) :
-        m_name(name),
+    matcher(std::string name, tgd_header::layer_content_type type) :
+        m_name(std::move(name)),
         m_type(type) {
     }
 
@@ -56,11 +56,17 @@ public:
 static tgd_header::layer_content_type parse_content_type(const std::string& content_type) {
     if (content_type.empty()) {
         return tgd_header::layer_content_type::unknown;
-    } else if (content_type == "png") {
+    }
+
+    if (content_type == "png") {
         return tgd_header::layer_content_type::png;
-    } else if (content_type == "jpg") {
+    }
+
+    if (content_type == "jpg") {
         return tgd_header::layer_content_type::jpeg;
-    } else if (content_type == "mvt") {
+    }
+
+    if (content_type == "mvt") {
         return tgd_header::layer_content_type::vt2;
     }
 

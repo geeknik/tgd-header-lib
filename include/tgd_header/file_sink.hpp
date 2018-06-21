@@ -37,7 +37,7 @@ namespace tgd_header {
             if (filename.empty() || filename == "-") {
                 return 1;
             }
-            return ::open(filename.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
+            return ::open(filename.c_str(), O_WRONLY | O_CREAT | O_TRUNC | O_CLOEXEC, 0644); // NOLINT (cppcoreguidelines-pro-type-vararg,hicpp-signed-bitwise,hicpp-vararg)
         }
 
     public:
