@@ -1,7 +1,10 @@
 ---
-Checks: '*,-cppcoreguidelines-owning-memory,-cppcoreguidelines-pro-bounds-array-to-pointer-decay,-cppcoreguidelines-pro-bounds-pointer-arithmetic,-fuchsia-*,-google-runtime-references,-hicpp-no-array-decay'
+Checks: '*,-cert-err60-cpp,-cppcoreguidelines-owning-memory,-cppcoreguidelines-pro-bounds-array-to-pointer-decay,-cppcoreguidelines-pro-bounds-pointer-arithmetic,-fuchsia-*,-google-runtime-references,-hicpp-no-array-decay'
 #
 #  Disabled checks:
+#
+#  cert-err60-cpp
+#    Reports stdexcept exceptions as broken which we can't do anything about.
 #
 #  cppcoreguidelines-owning-memory
 #    Don't want to add dependency on gsl library.
