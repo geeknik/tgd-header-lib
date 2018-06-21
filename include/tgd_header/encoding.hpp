@@ -93,22 +93,22 @@ namespace tgd_header {
         }
 
         inline void byteswap_inplace(int32_t* ptr) noexcept {
-            auto bptr = reinterpret_cast<uint32_t*>(ptr);
+            auto bptr = reinterpret_cast<uint32_t*>(ptr); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
             *bptr = byteswap_impl(*bptr);
         }
 
         inline void byteswap_inplace(int64_t* ptr) noexcept {
-            auto bptr = reinterpret_cast<uint64_t*>(ptr);
+            auto bptr = reinterpret_cast<uint64_t*>(ptr); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
             *bptr = byteswap_impl(*bptr);
         }
 
         inline void byteswap_inplace(float* ptr) noexcept {
-            auto bptr = reinterpret_cast<uint32_t*>(ptr);
+            auto bptr = reinterpret_cast<uint32_t*>(ptr); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
             *bptr = byteswap_impl(*bptr);
         }
 
         inline void byteswap_inplace(double* ptr) noexcept {
-            auto bptr = reinterpret_cast<uint64_t*>(ptr);
+            auto bptr = reinterpret_cast<uint64_t*>(ptr); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
             *bptr = byteswap_impl(*bptr);
         }
 
@@ -134,7 +134,7 @@ namespace tgd_header {
          */
         template <typename T>
         void get(const char* input, T* value) noexcept {
-            std::copy_n(input, sizeof(T), reinterpret_cast<char*>(value));
+            std::copy_n(input, sizeof(T), reinterpret_cast<char*>(value)); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
 #if TGD_HEADER_BYTE_ORDER != TGD_HEADER_LITTLE_ENDIAN
             detail::byteswap_inplace(value);
 #endif
@@ -150,7 +150,7 @@ namespace tgd_header {
 #if TGD_HEADER_BYTE_ORDER != TGD_HEADER_LITTLE_ENDIAN
             detail::byteswap_inplace(&value);
 #endif
-            std::copy_n(reinterpret_cast<const char*>(&value), sizeof(value), output);
+            std::copy_n(reinterpret_cast<const char*>(&value), sizeof(value), output); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
         }
 
         constexpr const std::uint64_t header_size = 40;

@@ -83,9 +83,9 @@ namespace tgd_header {
             mutable_buffer output{output_size};
 
             const auto result = ::compress(
-                reinterpret_cast<unsigned char*>(output.data()),
+                reinterpret_cast<unsigned char*>(output.data()), // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
                 &output_size,
-                reinterpret_cast<const unsigned char*>(m_content.data()),
+                reinterpret_cast<const unsigned char*>(m_content.data()), // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
                 static_cast<unsigned long>(m_content_length) // NOLINT(google-runtime-int)
             );
 
@@ -98,14 +98,14 @@ namespace tgd_header {
         }
 
         void decode_zlib() {
-            unsigned long raw_size = m_content_length;
+            unsigned long raw_size = m_content_length; // NOLINT(google-runtime-int)
 
             mutable_buffer mb{m_content_length};
 
             const auto result = ::uncompress(
-                reinterpret_cast<unsigned char*>(mb.data()),
+                reinterpret_cast<unsigned char*>(mb.data()), // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
                 &raw_size,
-                reinterpret_cast<const unsigned char*>(m_wire_content.data()),
+                reinterpret_cast<const unsigned char*>(m_wire_content.data()), // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
                 m_wire_content.size()
             );
 
