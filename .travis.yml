@@ -87,7 +87,7 @@ matrix:
     - os: linux
       compiler: "clang-6.0"
       env: BUILD='Release' CC=clang-6.0 CXX=clang++-6.0
-      addons: *clang50
+      addons: *clang60
     - os: linux
       compiler: "clang-6.0"
       env: BUILD='Debug' CC=clang-6.0 CXX=clang++-6.0
