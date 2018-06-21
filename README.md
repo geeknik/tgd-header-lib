@@ -10,6 +10,8 @@ header fields.
 This is a C++11 header-only library. It should work with any modern C++
 compiler.
 
+[![Build Status](https://travis-ci.org/mapbox/tgd-header-lib.svg?branch=master)](https://travis-ci.org/mapbox/tgd-header-lib)
+
 
 ## Use
 
