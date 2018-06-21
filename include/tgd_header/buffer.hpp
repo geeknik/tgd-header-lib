@@ -48,7 +48,7 @@ namespace tgd_header {
          */
         explicit mutable_buffer(std::size_t size) :
             m_size(size) {
-            m_data.reset(new char[size]);
+            m_data.reset(new char[size]); // NOLINT(modernize-make-unique) (not available in C++11)
         }
 
         char* data() const noexcept {

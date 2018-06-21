@@ -20,6 +20,7 @@ more documentation.
 
 namespace tgd_header {
 
+    /// Errors related to the common header format.
     struct format_error : public std::runtime_error {
 
         explicit format_error(const char* what) :
@@ -32,6 +33,7 @@ namespace tgd_header {
 
     }; // format_error
 
+    /// Errors originating in the zlib library.
     struct zlib_error : public std::runtime_error {
 
         explicit zlib_error(const std::string& what) :

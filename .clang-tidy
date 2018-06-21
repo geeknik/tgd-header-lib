@@ -1,0 +1,28 @@
+---
+Checks: '*,-cppcoreguidelines-owning-memory,-cppcoreguidelines-pro-bounds-array-to-pointer-decay,-cppcoreguidelines-pro-bounds-pointer-arithmetic,-fuchsia-*,-google-runtime-references,-hicpp-no-array-decay'
+#
+#  Disabled checks:
+#
+#  cppcoreguidelines-owning-memory
+#    Don't want to add dependency on gsl library.
+#
+#  cppcoreguidelines-pro-bounds-array-to-pointer-decay
+#    Limited use and many false positives including for all asserts.
+#
+#  cppcoreguidelines-pro-bounds-pointer-arithmetic
+#    This is a low-level library, it needs to do pointer arithmetic.
+#
+#  fuchsia-*
+#    Much too strict.
+#
+#  google-runtime-references
+#    This is just a matter of preference. Using pointers for this means
+#    there is a potential problem with nullptr.
+#
+#  hicpp-no-array-decay
+#    Limited use and many false positives including for all asserts.
+#
+WarningsAsErrors: '*'
+HeaderFilterRegex: '\/include\/'
+AnalyzeTemporaryDtors: false
+...

@@ -168,7 +168,7 @@ namespace tgd_header {
             layer(data.data(), data.size()) {
         }
 
-        operator bool() const noexcept {
+        explicit operator bool() const noexcept {
             return m_valid;
         }
 
