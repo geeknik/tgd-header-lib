@@ -19,6 +19,7 @@ more documentation.
 #include <algorithm>
 #include <array>
 #include <cstdint>
+#include <memory>
 
 namespace tgd_header {
 
@@ -32,8 +33,12 @@ namespace tgd_header {
 
         friend class buffer;
 
-        char* m_data = nullptr;
+        std::unique_ptr<char[]> m_data;
         std::size_t m_size;
+
+        char* release() noexcept {
+            return m_data.release();
+        }
 
     public:
 
@@ -43,7 +48,7 @@ namespace tgd_header {
          */
         explicit mutable_buffer(std::size_t size) :
             m_size(size) {
-            m_data = new char[size];
+            m_data.reset(new char[size]);
         }
 
         mutable_buffer(const mutable_buffer&) = delete;
@@ -52,12 +57,8 @@ namespace tgd_header {
         mutable_buffer(mutable_buffer&&) = delete;
         const mutable_buffer& operator=(mutable_buffer&&) = delete;
 
-        ~mutable_buffer() {
-            delete[] m_data;
-        }
-
         char* data() const noexcept {
-            return m_data;
+            return m_data.get();
         }
 
         std::size_t size() const noexcept {
@@ -109,7 +110,7 @@ namespace tgd_header {
          * memory will be taken over from the mutable_buffer.
          */
         explicit buffer(mutable_buffer& mb) :
-            m_data(mb.data()),
+            m_data(mb.release()),
             m_size(mb.size() | mask) {
             mb.m_data = nullptr;
         }
