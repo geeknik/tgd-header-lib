@@ -25,11 +25,11 @@ more documentation.
 #include <zlib.h>
 
 #include <algorithm>
-#include <string>
 #include <array>
 #include <cassert>
 #include <cstring>
 #include <limits>
+#include <string>
 #include <type_traits>
 
 namespace tgd_header {
