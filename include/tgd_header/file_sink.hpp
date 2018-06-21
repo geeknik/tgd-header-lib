@@ -16,6 +16,7 @@ more documentation.
  * @brief Contains the file_sink class.
  */
 
+#include <tgd_header/file.hpp>
 #include <tgd_header/layer.hpp>
 
 #include <fcntl.h>
@@ -28,12 +29,9 @@ more documentation.
 
 namespace tgd_header {
 
-    class file_sink {
+    class file_sink : public detail::file {
 
-        std::string m_filename;
-        int m_fd = -1;
-
-        int open_file(const std::string& filename) {
+        static int open_file(const std::string& filename) {
             if (filename.empty() || filename == "-") {
                 return 1;
             }
@@ -43,21 +41,11 @@ namespace tgd_header {
     public:
 
         explicit file_sink(const std::string& filename) :
-            m_filename(filename),
-            m_fd(open_file(filename)) {
-            if (m_fd < 0) {
-                std::runtime_error{"Can't open file"};
-            }
-        }
-
-        ~file_sink() {
-            if (m_fd > 2) {
-                ::close(m_fd);
-            }
+            file(open_file(filename)) {
         }
 
         void write(const buffer& buffer) {
-            const auto write_length = ::write(m_fd, buffer.data(), buffer.size());
+            const auto write_length = ::write(fd(), buffer.data(), buffer.size());
 
             if (static_cast<std::uint64_t>(write_length) != buffer.size()) {
                 throw std::system_error{errno, std::system_category(), "Write error"};
@@ -69,7 +57,7 @@ namespace tgd_header {
 
             static const char pad[detail::align_bytes] = {0};
 
-            const auto write_length = ::write(m_fd, pad, size);
+            const auto write_length = ::write(fd(), pad, size);
 
             if (static_cast<std::uint64_t>(write_length) != size) {
                 throw std::system_error{errno, std::system_category(), "Write error"};

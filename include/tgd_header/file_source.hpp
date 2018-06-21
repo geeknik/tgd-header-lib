@@ -16,7 +16,7 @@ more documentation.
  * @brief Contains the file_source class.
  */
 
-#include <tgd_header/file_utils.hpp>
+#include <tgd_header/file.hpp>
 #include <tgd_header/layer.hpp>
 
 #include <fcntl.h>
@@ -31,33 +31,18 @@ more documentation.
 
 namespace tgd_header {
 
-    class file_source {
-
-        int m_fd = -1;
+    class file_source : public detail::file {
 
     public:
 
         explicit file_source(const std::string& filename) :
-            m_fd(::open(filename.c_str(), O_RDONLY | O_CLOEXEC)) { // NOLINT(cppcoreguidelines-pro-type-vararg,hicpp-signed-bitwise,hicpp-vararg)
-            if (m_fd < 0) {
-                std::runtime_error{"Can't open file"};
-            }
-        }
-
-        ~file_source() {
-            if (m_fd >= 0) {
-                ::close(m_fd);
-            }
-        }
-
-        std::size_t file_size() const noexcept {
-            return detail::file_size(m_fd);
+            file(filename, O_RDONLY | O_CLOEXEC) { // NOLINT(hicpp-signed-bitwise)
         }
 
         buffer read(const std::size_t len) {
             mutable_buffer mb{len};
 
-            const auto read_length = ::read(m_fd, mb.data(), mb.size());
+            const auto read_length = ::read(fd(), mb.data(), mb.size());
 
             buffer buffer{mb};
             if (read_length == 0) {
@@ -73,7 +58,7 @@ namespace tgd_header {
         }
 
         void skip(const std::size_t len) {
-            const auto result = ::lseek(m_fd, static_cast<off_t>(len), SEEK_CUR);
+            const auto result = ::lseek(fd(), static_cast<off_t>(len), SEEK_CUR);
             if (result < 0) {
                 throw std::system_error{errno, std::system_category(), "Seek error"};
             }

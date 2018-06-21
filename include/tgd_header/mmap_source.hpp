@@ -16,7 +16,7 @@ more documentation.
  * @brief Contains the mmap_source class.
  */
 
-#include <tgd_header/file_utils.hpp>
+#include <tgd_header/file.hpp>
 #include <tgd_header/layer.hpp>
 
 #include <fcntl.h>
@@ -30,35 +30,26 @@ more documentation.
 
 namespace tgd_header {
 
-    class mmap_source {
+    class mmap_source : public detail::file {
 
-        std::string m_filename;
-        int m_fd = -1;
-        std::size_t m_size;
-        char* m_mapping;
+        std::size_t m_size = 0;
+        char* m_mapping = nullptr;
         std::uint64_t m_offset = 0;
 
     public:
 
         explicit mmap_source(const std::string& filename) :
-            m_filename(filename),
-            m_fd(::open(filename.c_str(), O_RDONLY | O_CLOEXEC)) { // NOLINT(cppcoreguidelines-pro-type-vararg,hicpp-signed-bitwise,hicpp-vararg)
-            if (m_fd < 0) {
-                std::runtime_error{"Can't open file"};
-            }
-            m_size = detail::file_size(m_fd);
-            m_mapping = static_cast<char*>(::mmap(nullptr, m_size, PROT_READ, MAP_PRIVATE, m_fd, 0));
+            file(filename, O_RDONLY | O_CLOEXEC) { // NOLINT(hicpp-signed-bitwise)
+            m_size = file_size();
+            m_mapping = static_cast<char*>(::mmap(nullptr, m_size, PROT_READ, MAP_PRIVATE, fd(), 0));
             if (!m_mapping) {
-                std::runtime_error{"Can't mmap file"};
+                std::runtime_error{std::string{"Can't mmap file: "} + filename};
             }
         }
 
         ~mmap_source() {
-            if (m_fd >= 0) {
-                if (m_mapping) {
-                    ::munmap(m_mapping, m_size);
-                }
-                ::close(m_fd);
+            if (m_mapping) {
+                ::munmap(m_mapping, m_size);
             }
         }
 
