@@ -109,6 +109,11 @@ namespace tgd_header {
             }
 
             file& operator=(file&& other) noexcept {
+                try {
+                    close();
+                } catch (...) {
+                    // ignore errors so that the move can be noexcept
+                }
                 m_fd = other.m_fd;
                 other.m_fd = -1;
                 return *this;
