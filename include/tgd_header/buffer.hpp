@@ -36,8 +36,9 @@ namespace tgd_header {
         std::unique_ptr<char[]> m_data;
         std::size_t m_size;
 
-        char* release() noexcept {
-            return m_data.release();
+        void release() noexcept {
+            m_data.release();
+            m_size = 0;
         }
 
     public:
@@ -57,6 +58,22 @@ namespace tgd_header {
 
         std::size_t size() const noexcept {
             return m_size;
+        }
+
+        char* begin() noexcept {
+            return m_data.get();
+        }
+
+        char* end() noexcept {
+            return m_data.get() + m_size;
+        }
+
+        const char* cbegin() noexcept {
+            return m_data.get();
+        }
+
+        const char* cend() noexcept {
+            return m_data.get() + m_size;
         }
 
     }; // class mutable_buffer
@@ -104,9 +121,9 @@ namespace tgd_header {
          * memory will be taken over from the mutable_buffer.
          */
         explicit buffer(mutable_buffer& mb) :
-            m_data(mb.release()),
+            m_data(mb.data()),
             m_size(mb.size() | mask) {
-            mb.m_data = nullptr;
+            mb.release();
         }
 
         /**
@@ -202,6 +219,22 @@ namespace tgd_header {
         /// Return the size of the buffer contents.
         std::size_t size() const noexcept {
             return m_size & ~mask;
+        }
+
+        const char* begin() const noexcept {
+            return m_data;
+        }
+
+        const char* end() const noexcept {
+            return m_data + size();
+        }
+
+        const char* cbegin() const noexcept {
+            return begin();
+        }
+
+        const char* cend() const noexcept {
+            return end();
         }
 
     }; // class buffer

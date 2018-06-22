@@ -5,6 +5,7 @@
 
 #include <array>
 #include <cstring>
+#include <iterator>
 #include <string>
 
 TEST_CASE("Empty buffer") {
@@ -14,6 +15,8 @@ TEST_CASE("Empty buffer") {
     REQUIRE_FALSE(b.managed());
     REQUIRE(b.size() == 0);
     REQUIRE(b.data() == nullptr);
+    REQUIRE(b.begin() == b.end());
+    REQUIRE(b.cbegin() == b.cend());
     b.clear();
     REQUIRE_FALSE(b);
 }
@@ -48,6 +51,8 @@ TEST_CASE("Managed pre-allocated buffer") {
     REQUIRE(b.managed());
     REQUIRE(a == b.data());
     REQUIRE(b.size() == 20);
+    REQUIRE(std::distance(b.begin(), b.end()) == 20);
+    REQUIRE(std::distance(b.cbegin(), b.cend()) == 20);
     b.clear();
     REQUIRE_FALSE(b);
 }
@@ -74,5 +79,28 @@ TEST_CASE("Managed buffer with existing data") {
     REQUIRE(!std::strncmp(b.data(), some_data.data(), some_data.size()));
     b.clear();
     REQUIRE_FALSE(b);
+}
+
+TEST_CASE("Managed buffer created from mutable_buffer") {
+    tgd_header::mutable_buffer mb{20};
+    REQUIRE(mb.size() == 20);
+    REQUIRE(mb.data() != nullptr);
+    REQUIRE(std::distance(mb.begin(), mb.end()) == 20);
+    REQUIRE(std::distance(mb.cbegin(), mb.cend()) == 20);
+
+    std::array<char, 10> data{"abcd_abcd"};
+
+    std::copy(data.begin(), data.end(), mb.begin());
+
+    tgd_header::buffer b{mb};
+    REQUIRE(std::distance(b.begin(), b.end()) == 20);
+    REQUIRE(std::distance(b.cbegin(), b.cend()) == 20);
+    REQUIRE(mb.size() == 0);
+    REQUIRE(mb.data() == nullptr);
+
+    REQUIRE(b);
+    REQUIRE(b.managed());
+    REQUIRE(b.size() == 20);
+    REQUIRE(b.data() == std::string{"abcd_abcd"});
 }
 
