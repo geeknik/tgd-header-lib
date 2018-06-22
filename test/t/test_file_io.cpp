@@ -87,3 +87,23 @@ TEST_CASE("Write and read buffer using mmap with padding and skip") {
     unlink(filename);
 }
 
+TEST_CASE("File source stdin (empty)") {
+    tgd_header::file_source source{""};
+    REQUIRE(source.fd() == 0);
+}
+
+TEST_CASE("File source stdin (-)") {
+    tgd_header::file_source source{"-"};
+    REQUIRE(source.fd() == 0);
+}
+
+TEST_CASE("File sink stdin (empty)") {
+    tgd_header::file_sink sink{""};
+    REQUIRE(sink.fd() == 1);
+}
+
+TEST_CASE("File sink stdin (-)") {
+    tgd_header::file_sink sink{"-"};
+    REQUIRE(sink.fd() == 1);
+}
+

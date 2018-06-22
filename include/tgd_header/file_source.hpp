@@ -32,10 +32,17 @@ namespace tgd_header {
 
     class file_source : public detail::file {
 
+        static int open_file(const std::string& filename) {
+            if (filename.empty() || filename == "-") {
+                return 0;
+            }
+            return ::open(filename.c_str(), O_RDONLY | O_CLOEXEC); // NOLINT (cppcoreguidelines-pro-type-vararg,hicpp-signed-bitwise,hicpp-vararg)
+        }
+
     public:
 
         explicit file_source(const std::string& filename) :
-            file(filename, O_RDONLY | O_CLOEXEC) { // NOLINT(hicpp-signed-bitwise)
+            file(open_file(filename)) {
         }
 
         buffer read(const std::size_t len) const {
