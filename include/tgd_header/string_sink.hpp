@@ -16,11 +16,10 @@ more documentation.
  * @brief Contains the string_sink class.
  */
 
-#include <tgd_header/layer.hpp>
+#include "buffer.hpp"
 
+#include <cstdint>
 #include <string>
-
-//#include <iostream>
 
 namespace tgd_header {
 

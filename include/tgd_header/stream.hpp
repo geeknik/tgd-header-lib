@@ -16,8 +16,8 @@ more documentation.
  * @brief Contains stream output operators for basic types used in the library.
  */
 
-#include <tgd_header/tile.hpp>
-#include <tgd_header/types.hpp>
+#include "tile.hpp"
+#include "types.hpp"
 
 #include <ostream>
 

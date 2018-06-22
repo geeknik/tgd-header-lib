@@ -17,6 +17,7 @@ more documentation.
  */
 
 #include <stdexcept>
+#include <string>
 
 namespace tgd_header {
 

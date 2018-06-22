@@ -16,9 +16,10 @@ more documentation.
  * @brief Contains the file_source class.
  */
 
-#include <tgd_header/file.hpp>
-#include <tgd_header/layer.hpp>
+#include "buffer.hpp"
+#include "file.hpp"
 
+#include <cstdint>
 #include <fcntl.h>
 #include <stdexcept>
 #include <string>
@@ -26,8 +27,6 @@ more documentation.
 #include <sys/types.h>
 #include <system_error>
 #include <unistd.h>
-
-//#include <iostream>
 
 namespace tgd_header {
 

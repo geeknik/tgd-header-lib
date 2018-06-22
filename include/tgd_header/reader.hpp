@@ -16,9 +16,8 @@ more documentation.
  * @brief Contains the reader class.
  */
 
-#include <tgd_header/exceptions.hpp>
-#include <tgd_header/layer.hpp>
-#include <tgd_header/types.hpp>
+#include "encoding.hpp"
+#include "layer.hpp"
 
 #include <cassert>
 

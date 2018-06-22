@@ -16,13 +16,10 @@ more documentation.
  * @brief Contains the tile_address class.
  */
 
-#include <tgd_header/encoding.hpp>
-#include <tgd_header/exceptions.hpp>
+#include "encoding.hpp"
 
-#include <algorithm>
 #include <array>
 #include <cstdint>
-#include <cstring>
 
 namespace tgd_header {
 

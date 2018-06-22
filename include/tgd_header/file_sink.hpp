@@ -16,9 +16,12 @@ more documentation.
  * @brief Contains the file_sink class.
  */
 
-#include <tgd_header/file.hpp>
-#include <tgd_header/layer.hpp>
+#include "buffer.hpp"
+#include "encoding.hpp"
+#include "file.hpp"
 
+#include <cassert>
+#include <cstdint>
 #include <fcntl.h>
 #include <stdexcept>
 #include <string>

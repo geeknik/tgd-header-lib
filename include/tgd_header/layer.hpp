@@ -16,11 +16,11 @@ more documentation.
  * @brief Contains the layer class.
  */
 
-#include <tgd_header/buffer.hpp>
-#include <tgd_header/encoding.hpp>
-#include <tgd_header/exceptions.hpp>
-#include <tgd_header/tile.hpp>
-#include <tgd_header/types.hpp>
+#include "buffer.hpp"
+#include "encoding.hpp"
+#include "exceptions.hpp"
+#include "tile.hpp"
+#include "types.hpp"
 
 #include <zlib.h>
 
@@ -30,7 +30,7 @@ more documentation.
 #include <cstring>
 #include <limits>
 #include <string>
-#include <type_traits>
+#include <utility>
 
 namespace tgd_header {
 

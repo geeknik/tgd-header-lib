@@ -16,9 +16,10 @@ more documentation.
  * @brief Contains the mmap_source class.
  */
 
-#include <tgd_header/file.hpp>
-#include <tgd_header/layer.hpp>
+#include "buffer.hpp"
+#include "file.hpp"
 
+#include <cstdint>
 #include <fcntl.h>
 #include <stdexcept>
 #include <string>

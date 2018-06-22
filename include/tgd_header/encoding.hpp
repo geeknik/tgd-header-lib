@@ -17,6 +17,7 @@ more documentation.
  */
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 
 #define TGD_HEADER_LITTLE_ENDIAN 1234

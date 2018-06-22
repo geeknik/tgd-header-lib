@@ -16,8 +16,10 @@ more documentation.
  * @brief Contains the buffer_source class.
  */
 
-#include <tgd_header/buffer.hpp>
-#include <tgd_header/layer.hpp>
+#include "buffer.hpp"
+
+#include <cstdint>
+#include <stdexcept>
 
 namespace tgd_header {
 
