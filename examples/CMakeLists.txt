@@ -25,10 +25,8 @@ target_link_libraries(tgd-list ${ZLIB_LIBRARIES})
 
 #-----------------------------------------------------------------------------
 
-set(HELP_TESTS
-        cat
-        encode
-        filter)
+set(HELP_TESTS cat
+               filter)
 
 foreach(example ${HELP_TESTS})
     add_test(NAME ${example}_help

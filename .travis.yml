@@ -160,9 +160,9 @@ script:
       curl -S -f https://codecov.io/bash -o codecov
       chmod +x codecov
       ${COVERAGE} -p $(find test -name '*.o')
-      ./codecov -Z -c -X gcov -f '!*catch*' -F unit_tests
+      ./codecov -Z -c -X gcov -f '!*catch*' -f '!*include-external*' -F unit_tests
       ${COVERAGE} -p $(find examples -name '*.o')
-      ./codecov -Z -c -X gcov -f '!*catch*' -F examples
+      ./codecov -Z -c -X gcov -f '!*catch*' -f '!*include-external*' -F examples
     fi
 
 #-----------------------------------------------------------------------------
