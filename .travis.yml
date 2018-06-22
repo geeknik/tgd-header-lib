@@ -162,7 +162,7 @@ script:
       ${COVERAGE} -p $(find test -name '*.o')
       ./codecov -Z -c -X gcov -f '!*catch*' -F unit_tests
       ${COVERAGE} -p $(find examples -name '*.o')
-      ./codecov -Z -c -X gcov -F examples
+      ./codecov -Z -c -X gcov -f '!*catch*' -F examples
     fi
 
 #-----------------------------------------------------------------------------

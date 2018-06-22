@@ -23,3 +23,16 @@ target_link_libraries(tgd-layer ${ZLIB_LIBRARIES})
 add_executable(tgd-list tgd-list.cpp)
 target_link_libraries(tgd-list ${ZLIB_LIBRARIES})
 
+#-----------------------------------------------------------------------------
+
+set(HELP_TESTS
+        cat
+        encode
+        filter)
+
+foreach(example ${HELP_TESTS})
+    add_test(NAME ${example}_help
+             COMMAND tgd-${example} -h)
+endforeach()
+
+
