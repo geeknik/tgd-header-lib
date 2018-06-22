@@ -11,6 +11,7 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 set(TEST_SOURCES buffer
                  encoding
+                 file_io
                  layer
                  tile)
 
@@ -20,7 +21,6 @@ add_executable(unit-tests test_main.cpp ${_test_sources})
 target_link_libraries(unit-tests ${ZLIB_LIBRARIES})
 
 add_test(NAME unit-tests
-         COMMAND unit-tests
-         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+         COMMAND unit-tests)
 
 #-----------------------------------------------------------------------------

@@ -49,9 +49,18 @@ namespace tgd_header {
         }
 
         ~mmap_source() {
+            try {
+                close();
+            } catch (...) {
+                // ignore errors so that the destructor can be noexcept
+            }
+        }
+
+        void close() {
             if (m_mapping) {
                 ::munmap(m_mapping, m_size);
             }
+            file::close();
         }
 
         buffer read(const std::uint64_t len) {

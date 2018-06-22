@@ -38,7 +38,7 @@ namespace tgd_header {
             file(filename, O_RDONLY | O_CLOEXEC) { // NOLINT(hicpp-signed-bitwise)
         }
 
-        buffer read(const std::size_t len) {
+        buffer read(const std::size_t len) const {
             mutable_buffer mb{len};
 
             const auto read_length = ::read(fd(), mb.data(), mb.size());
@@ -56,7 +56,7 @@ namespace tgd_header {
             throw std::system_error{errno, std::system_category(), "Read error"};
         }
 
-        void skip(const std::size_t len) {
+        void skip(const std::size_t len) const {
             const auto result = ::lseek(fd(), static_cast<off_t>(len), SEEK_CUR);
             if (result < 0) {
                 throw std::system_error{errno, std::system_category(), "Seek error"};

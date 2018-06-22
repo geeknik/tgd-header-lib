@@ -115,8 +115,20 @@ namespace tgd_header {
             }
 
             ~file() noexcept {
+                try {
+                    close();
+                } catch (...) {
+                    // ignore errors so that the destructor can be noexcept
+                }
+            }
+
+            void close() {
                 if (m_fd >= 2) {
-                    ::close(m_fd);
+                    if (::close(m_fd) != 0) {
+                        m_fd = -1;
+                        throw std::system_error{errno, std::system_category(), "Error when closing file"};
+                    }
+                    m_fd = -1;
                 }
             }
 

@@ -41,30 +41,30 @@ namespace tgd_header {
             return ::open(filename.c_str(), O_WRONLY | O_CREAT | O_TRUNC | O_CLOEXEC, 0644); // NOLINT (cppcoreguidelines-pro-type-vararg,hicpp-signed-bitwise,hicpp-vararg)
         }
 
+        void write_impl(const char* data, std::size_t size) const {
+            const auto write_length = ::write(fd(), data, size);
+
+            if (static_cast<std::uint64_t>(write_length) != size) {
+                throw std::system_error{errno, std::system_category(), "Write error"};
+            }
+        }
+
     public:
 
         explicit file_sink(const std::string& filename) :
             file(open_file(filename)) {
         }
 
-        void write(const buffer& buffer) {
-            const auto write_length = ::write(fd(), buffer.data(), buffer.size());
-
-            if (static_cast<std::uint64_t>(write_length) != buffer.size()) {
-                throw std::system_error{errno, std::system_category(), "Write error"};
-            }
+        void write(const buffer& buffer) const {
+            write_impl(buffer.data(), buffer.size());
         }
 
-        void padding(std::uint64_t size) {
+        void padding(std::uint64_t size) const {
             assert(size < detail::align_bytes);
 
             static const char pad[detail::align_bytes] = {0};
 
-            const auto write_length = ::write(fd(), pad, size);
-
-            if (static_cast<std::uint64_t>(write_length) != size) {
-                throw std::system_error{errno, std::system_category(), "Write error"};
-            }
+            write_impl(pad, size);
         }
 
     }; // file_sink
