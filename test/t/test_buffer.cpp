@@ -57,7 +57,7 @@ TEST_CASE("Managed pre-allocated buffer") {
     REQUIRE_FALSE(b);
 }
 
-TEST_CASE("Managed buffer from std::array") {
+TEST_CASE("Unmanaged buffer from std::array") {
     std::array<char, 10> data{"abc"};
     tgd_header::buffer b{data};
 
@@ -102,5 +102,22 @@ TEST_CASE("Managed buffer created from mutable_buffer") {
     REQUIRE(b.managed());
     REQUIRE(b.size() == 20);
     REQUIRE(b.data() == std::string{"abcd_abcd"});
+}
+
+TEST_CASE("Swap buffers") {
+    std::array<char, 10> data1{"abc"};
+    tgd_header::buffer b1{data1};
+    REQUIRE_FALSE(b1.managed());
+    REQUIRE(b1.size() == 10);
+
+    std::array<char, 20> data2{"def"};
+    tgd_header::buffer b2{data2};
+    REQUIRE_FALSE(b2.managed());
+    REQUIRE(b2.size() == 20);
+
+    using std::swap;
+    swap(b1, b2);
+    REQUIRE(b1.size() == 20);
+    REQUIRE(b2.size() == 10);
 }
 

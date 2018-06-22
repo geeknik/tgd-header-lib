@@ -239,6 +239,10 @@ namespace tgd_header {
 
     }; // class buffer
 
+    inline void swap(buffer& a, buffer& b) noexcept {
+        a.swap(b);
+    }
+
 } // namespace tgd_header
 
 #endif // TGD_HEADER_BUFFER_HPP
