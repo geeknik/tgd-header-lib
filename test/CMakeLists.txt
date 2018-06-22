@@ -13,6 +13,7 @@ set(TEST_SOURCES buffer
                  encoding
                  file_io
                  layer
+                 memory_io
                  tile)
 
 string(REGEX REPLACE "([^;]+)" "t/test_\\1.cpp" _test_sources "${TEST_SOURCES}")
