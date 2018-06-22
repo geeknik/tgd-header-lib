@@ -244,14 +244,6 @@ namespace tgd_header {
             m_content = buffer{content, length};
         }
 
-        void set_content(const char* content) {
-            const auto length = std::strlen(content) + 1;
-            if (length >= std::numeric_limits<content_length_type>::max()) {
-                throw format_error{"content too long"};
-            }
-            set_content(content, length);
-        }
-
         content_length_type wire_content_length() const noexcept {
             return m_wire_content_length;
         }

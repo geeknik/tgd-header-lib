@@ -9,6 +9,7 @@
 #include <tgd_header/tile.hpp>
 #include <tgd_header/types.hpp>
 
+#include <array>
 #include <cstring>
 #include <string>
 
@@ -60,5 +61,67 @@ TEST_CASE("Encode and decode layer") {
     new_layer.decode_content();
     REQUIRE(new_layer.content_length() == std::strlen(content) + 1);
     REQUIRE(!std::strcmp(new_layer.content().data(), content));
+}
+
+inline bool operator==(const tgd_header::buffer& buf, const char* str) noexcept {
+    if (buf.size() != std::strlen(str) + 1) {
+        return false;
+    }
+    return !std::strcmp(buf.data(), str);
+}
+
+TEST_CASE("Set name using cstring") {
+    const char* name = "some_name";
+
+    tgd_header::layer layer;
+    layer.set_name(name);
+    REQUIRE(layer.name_length() == 10);
+    REQUIRE(layer.name() == "some_name");
+}
+
+TEST_CASE("Set name using buffer") {
+    const char* name = "another_name";
+    tgd_header::buffer buffer{name, std::strlen(name) + 1};
+
+    tgd_header::layer layer;
+    layer.set_name(std::move(buffer));
+    REQUIRE(layer.name_length() == 13);
+    REQUIRE(layer.name() == "another_name");
+}
+
+
+TEST_CASE("Set name using ptr and length") {
+    const char* name = "a_name";
+
+    tgd_header::layer layer;
+    layer.set_name(name, std::strlen(name) + 1);
+    REQUIRE(layer.name_length() == 7);
+    REQUIRE(layer.name() == "a_name");
+}
+
+TEST_CASE("Set content using buffer") {
+    const char* content = "body";
+    tgd_header::buffer buffer{content, std::strlen(content) + 1};
+
+    tgd_header::layer layer;
+    layer.set_content(std::move(buffer));
+    REQUIRE(layer.content_length() == 5);
+    REQUIRE(layer.content() == "body");
+}
+
+
+TEST_CASE("Set content using ptr and length") {
+    const char content[] = "a_body";
+
+    tgd_header::layer layer;
+    layer.set_content(content, sizeof(content));
+    REQUIRE(layer.content_length() == 7);
+    REQUIRE(layer.content() == "a_body");
+}
+
+TEST_CASE("Decoding incomplete layer throws") {
+    const std::string data = "abcdefghijkl";
+
+    REQUIRE_THROWS_AS(tgd_header::layer{data}, const tgd_header::format_error&);
 }
 
