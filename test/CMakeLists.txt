@@ -14,6 +14,7 @@ set(TEST_SOURCES buffer
                  file_io
                  layer
                  memory_io
+                 stream
                  tile)
 
 string(REGEX REPLACE "([^;]+)" "t/test_\\1.cpp" _test_sources "${TEST_SOURCES}")

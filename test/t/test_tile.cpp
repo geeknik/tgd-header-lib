@@ -1,7 +1,10 @@
 
 #include <catch.hpp>
 
+#include <tgd_header/stream.hpp>
 #include <tgd_header/tile.hpp>
+
+#include <sstream>
 
 TEST_CASE("Default tile") {
     tgd_header::tile_address t;
@@ -9,6 +12,10 @@ TEST_CASE("Default tile") {
     REQUIRE(t.zoom() == 0);
     REQUIRE(t.x() == 0);
     REQUIRE(t.y() == 0);
+
+    std::stringstream ss;
+    ss << t;
+    REQUIRE(ss.str() == "0/0/0");
 }
 
 TEST_CASE("Defined tile") {
@@ -17,6 +24,10 @@ TEST_CASE("Defined tile") {
     REQUIRE(t.zoom() == 10);
     REQUIRE(t.x() == 5);
     REQUIRE(t.y() == 3);
+
+    std::stringstream ss;
+    ss << t;
+    REQUIRE(ss.str() == "10/5/3");
 }
 
 TEST_CASE("Tile comparison") {
