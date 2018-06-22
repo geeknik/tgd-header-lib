@@ -29,8 +29,12 @@ set(HELP_TESTS cat
                filter)
 
 foreach(example ${HELP_TESTS})
-    add_test(NAME ${example}_help
-             COMMAND tgd-${example} -h)
+
+    add_test(NAME example_${example}_help COMMAND tgd-${example} -h)
+
+    add_test(NAME example_${example}_error COMMAND tgd-${example} --nonexistent-option)
+    set_tests_properties(example_${example}_error PROPERTIES WILL_FAIL true)
+
 endforeach()
 
 

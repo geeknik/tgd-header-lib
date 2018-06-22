@@ -101,7 +101,7 @@ int main(int argc, char *argv[]) {
     }
 
     if (help) {
-        std::cout << "Filter input file by name and/or content type.\n\n";
+        std::cout << "Filter tile input file by name and/or content type.\n\n";
         std::cout << cli;
         return 0;
     }

@@ -123,6 +123,7 @@ int main(int argc, char *argv[]) {
     }
 
     if (help) {
+        std::cout << "Concatenate layers into a tile.\n\n";
         std::cout << cli;
         return 0;
     }
