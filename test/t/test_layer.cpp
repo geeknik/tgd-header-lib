@@ -17,7 +17,7 @@ TEST_CASE("Encode and decode layer") {
     const char* name = "test";
     const char* content = "the quick brown fox jumps over the lazy dog";
 
-    tgd_header::layer_compression_type ct;
+    auto ct = tgd_header::layer_compression_type::uncompressed;
 
     SECTION("without compression") {
         ct = tgd_header::layer_compression_type::uncompressed;
