@@ -125,3 +125,74 @@ TEST_CASE("Decoding incomplete layer throws") {
     REQUIRE_THROWS_AS(tgd_header::layer{data}, const tgd_header::format_error&);
 }
 
+static const char content[] = "the quick brown fox jumps over the lazy dog";
+
+static std::string create_test_layer() {
+
+    // set up layer
+    tgd_header::layer layer;
+    layer.set_content_type(tgd_header::layer_content_type::unknown);
+    layer.set_compression_type(tgd_header::layer_compression_type::zlib);
+    layer.set_tile(tgd_header::tile_address{4, 3, 2});
+    layer.set_name("test");
+    layer.set_content(content, sizeof(content));
+
+    // encode layer
+    std::string out;
+    tgd_header::string_sink sink{out};
+    layer.write(sink);
+
+    return out;
+}
+
+TEST_CASE("Error in compressed content is detected") {
+    auto out = create_test_layer();
+
+    // corrupt the compressed data
+    out[32] = '\0';
+
+    // decode layer again and check it
+    tgd_header::buffer b{out.data(), out.size()};
+    tgd_header::buffer_source source{b};
+    tgd_header::reader<tgd_header::buffer_source> reader{source};
+    auto& new_layer = reader.next_layer();
+
+    reader.read_content();
+    REQUIRE_THROWS_AS(new_layer.decode_content(), const tgd_header::zlib_error&);
+    REQUIRE_THROWS_WITH(new_layer.decode_content(), "failed to uncompress data: data error");
+}
+
+TEST_CASE("Length of compressed content is too large") {
+    auto out = create_test_layer();
+
+    // corrupt the original_length field
+    tgd_header::detail::set<uint64_t>(sizeof(content) + 1, &out[tgd_header::detail::offset::original_length]);
+
+    // decode layer again and check it
+    tgd_header::buffer b{out.data(), out.size()};
+    tgd_header::buffer_source source{b};
+    tgd_header::reader<tgd_header::buffer_source> reader{source};
+    auto& new_layer = reader.next_layer();
+
+    reader.read_content();
+    REQUIRE_THROWS_AS(new_layer.decode_content(), const tgd_header::format_error&);
+    REQUIRE_THROWS_WITH(new_layer.decode_content(), "wrong original size on compressed data");
+}
+
+TEST_CASE("Length of compressed content is too small") {
+    auto out = create_test_layer();
+
+    // corrupt the original_length field
+    tgd_header::detail::set<uint64_t>(sizeof(content) - 1, &out[tgd_header::detail::offset::original_length]);
+
+    // decode layer again and check it
+    tgd_header::buffer b{out.data(), out.size()};
+    tgd_header::buffer_source source{b};
+    tgd_header::reader<tgd_header::buffer_source> reader{source};
+    auto& new_layer = reader.next_layer();
+
+    reader.read_content();
+    REQUIRE_THROWS_AS(new_layer.decode_content(), const tgd_header::zlib_error&);
+    REQUIRE_THROWS_WITH(new_layer.decode_content(), "failed to uncompress data: buffer error");
+}
+
