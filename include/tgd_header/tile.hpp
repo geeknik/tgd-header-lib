@@ -29,6 +29,9 @@ namespace tgd_header {
         std::uint32_t m_y = 0;
         std::uint8_t m_zoom = 0;
 
+        static_assert(tgd_header::detail::offset::tile_x % sizeof(tgd_header::tile_address::m_x) == 0, "tile_x field must be aligned properly");
+        static_assert(tgd_header::detail::offset::tile_y % sizeof(tgd_header::tile_address::m_y) == 0, "tile_y field must be aligned properly");
+
     public:
 
         constexpr tile_address() = default;

@@ -156,7 +156,7 @@ namespace tgd_header {
 
         constexpr const std::uint64_t header_size = 40;
 
-        // XXX this is preliminary and needs to be optimmized
+        // XXX this is preliminary and needs to be optimized
         enum offset : std::size_t {
             content_type     =  4,
             name_length      =  8,
