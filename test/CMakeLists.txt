@@ -11,6 +11,7 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 set(TEST_SOURCES buffer
                  encoding
+                 endian
                  file_io
                  layer
                  memory_io

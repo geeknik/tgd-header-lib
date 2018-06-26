@@ -103,16 +103,6 @@ namespace tgd_header {
             *bptr = byteswap_impl(*bptr);
         }
 
-        inline void byteswap_inplace(float* ptr) noexcept {
-            auto bptr = reinterpret_cast<uint32_t*>(ptr); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-            *bptr = byteswap_impl(*bptr);
-        }
-
-        inline void byteswap_inplace(double* ptr) noexcept {
-            auto bptr = reinterpret_cast<uint64_t*>(ptr); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-            *bptr = byteswap_impl(*bptr);
-        }
-
         constexpr const std::uint64_t align_bytes = 8;
 
         inline constexpr std::uint64_t padding(uint64_t size) noexcept {
