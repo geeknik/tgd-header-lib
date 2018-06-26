@@ -28,6 +28,7 @@ more documentation.
 #include <sys/types.h>
 #include <system_error>
 #include <unistd.h>
+#include <utility>
 
 namespace tgd_header {
 
@@ -48,12 +49,37 @@ namespace tgd_header {
             }
         }
 
+        mmap_source(const mmap_source&) = delete;
+        mmap_source& operator=(const mmap_source&) = delete;
+
+        mmap_source(mmap_source&& other) noexcept :
+            file(std::move(other)),
+            m_size(other.m_size),
+            m_mapping(other.m_mapping),
+            m_offset(other.m_offset) {
+            other.m_size = 0;
+            other.m_mapping = nullptr;
+        }
+
+        mmap_source& operator=(mmap_source&& other) noexcept {
+            swap(other);
+            return *this;
+        }
+
         ~mmap_source() {
             try {
                 close();
             } catch (...) {
                 // ignore errors so that the destructor can be noexcept
             }
+        }
+
+        /// Swap the contents of this mmap_source with the specified mmap_source.
+        void swap(mmap_source& other) noexcept {
+            using std::swap;
+            swap(m_size, other.m_size);
+            swap(m_mapping, other.m_mapping);
+            swap(m_offset, other.m_offset);
         }
 
         void close() {
@@ -80,6 +106,10 @@ namespace tgd_header {
         }
 
     }; // mmap_source
+
+    inline void swap(mmap_source& a, mmap_source& b) noexcept {
+        a.swap(b);
+    }
 
 } // namespace tgd_header
 

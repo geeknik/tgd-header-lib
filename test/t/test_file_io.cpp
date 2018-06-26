@@ -6,6 +6,16 @@
 #include <tgd_header/mmap_source.hpp>
 
 #include <algorithm>
+#include <type_traits>
+
+static_assert(!std::is_copy_constructible<tgd_header::file_source>(), "file_source should not be copy constructible");
+static_assert(!std::is_copy_assignable<tgd_header::file_source>(), "file_source should not be copy constructible");
+
+static_assert(!std::is_copy_constructible<tgd_header::mmap_source>(), "mmap_source should not be copy constructible");
+static_assert(!std::is_copy_assignable<tgd_header::mmap_source>(), "mmap_source should not be copy constructible");
+
+static_assert(!std::is_copy_constructible<tgd_header::file_sink>(), "file_sink should not be copy constructible");
+static_assert(!std::is_copy_assignable<tgd_header::file_sink>(), "file_sink should not be copy constructible");
 
 TEST_CASE("Write and read buffer") {
     const auto filename = "test_file_1";
@@ -50,6 +60,12 @@ TEST_CASE("Write and read buffer with padding and skip") {
     tgd_header::file_source source{filename};
     REQUIRE(source.file_size() == data_size + padding_size);
 
+    SECTION("move construct/swap source") {
+        tgd_header::file_source source2{std::move(source)};
+        using std::swap;
+        swap(source2, source);
+    }
+
     source.skip(padding_size);
 
     const auto in_buffer = source.read(data_size);
@@ -79,6 +95,12 @@ TEST_CASE("Write and read buffer using mmap with padding and skip") {
     REQUIRE(source.file_size() == data_size + padding_size);
 
     source.skip(padding_size);
+
+    SECTION("move construct/swap source") {
+        tgd_header::mmap_source source2{std::move(source)};
+        using std::swap;
+        swap(source2, source);
+    }
 
     const auto in_buffer = source.read(data_size);
     REQUIRE(in_buffer.size() == out_buffer.size());

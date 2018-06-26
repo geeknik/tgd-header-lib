@@ -7,6 +7,10 @@
 #include <cstring>
 #include <iterator>
 #include <string>
+#include <type_traits>
+
+static_assert(!std::is_copy_constructible<tgd_header::buffer>(), "buffer should not be copy constructible");
+static_assert(!std::is_copy_assignable<tgd_header::buffer>(), "buffer should not be copy constructible");
 
 TEST_CASE("Empty buffer") {
     tgd_header::buffer b;
