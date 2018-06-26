@@ -14,8 +14,8 @@
 #include <string>
 
 TEST_CASE("Encode and decode layer") {
-    const char* name = "test";
-    const char* content = "the quick brown fox jumps over the lazy dog";
+    const char name[] = "test";
+    const char content[] = "the quick brown fox jumps over the lazy dog";
 
     auto ct = tgd_header::layer_compression_type::uncompressed;
 
@@ -33,7 +33,7 @@ TEST_CASE("Encode and decode layer") {
     layer.set_compression_type(ct);
     layer.set_tile(tgd_header::tile_address{4, 3, 2});
     layer.set_name(name);
-    layer.set_content(content, std::strlen(content) + 1);
+    layer.set_content(content, sizeof(content));
 
     // encode layer
     std::string out;
@@ -41,7 +41,7 @@ TEST_CASE("Encode and decode layer") {
     layer.write(sink);
 
     // check encoded layer
-    REQUIRE(out.size() >= 20 + std::strlen(name) + std::strlen(content));
+    REQUIRE(out.size() >= 20 + sizeof(name) + sizeof(content));
     REQUIRE(!std::strncmp(out.data(), "TGD0", 4));
 
     // decode layer again and check it
@@ -54,12 +54,12 @@ TEST_CASE("Encode and decode layer") {
     REQUIRE(new_layer.content_type() == tgd_header::layer_content_type::unknown);
     REQUIRE(new_layer.compression_type() == ct);
     REQUIRE(new_layer.tile() == tgd_header::tile_address(4, 3, 2));
-    REQUIRE(new_layer.name_length() == std::strlen(name) + 1);
+    REQUIRE(new_layer.name_length() == sizeof(name));
     REQUIRE(!std::strncmp(new_layer.name().data(), name, std::strlen(name)));
 
     reader.read_content();
     new_layer.decode_content();
-    REQUIRE(new_layer.content_length() == std::strlen(content) + 1);
+    REQUIRE(new_layer.content_length() == sizeof(content));
     REQUIRE(!std::strcmp(new_layer.content().data(), content));
 }
 
@@ -80,8 +80,8 @@ TEST_CASE("Set name using cstring") {
 }
 
 TEST_CASE("Set name using buffer") {
-    const char* name = "another_name";
-    tgd_header::buffer buffer{name, std::strlen(name) + 1};
+    const char name[] = "another_name";
+    tgd_header::buffer buffer{name, sizeof(name)};
 
     tgd_header::layer layer;
     layer.set_name(std::move(buffer));
@@ -91,17 +91,17 @@ TEST_CASE("Set name using buffer") {
 
 
 TEST_CASE("Set name using ptr and length") {
-    const char* name = "a_name";
+    const char name[] = "a_name";
 
     tgd_header::layer layer;
-    layer.set_name(name, std::strlen(name) + 1);
+    layer.set_name(name, sizeof(name));
     REQUIRE(layer.name_length() == 7);
     REQUIRE(buffer_is_equal(layer.name(), "a_name"));
 }
 
 TEST_CASE("Set content using buffer") {
-    const char* content = "body";
-    tgd_header::buffer buffer{content, std::strlen(content) + 1};
+    const char content[] = "body";
+    tgd_header::buffer buffer{content, sizeof(content)};
 
     tgd_header::layer layer;
     layer.set_content(std::move(buffer));
