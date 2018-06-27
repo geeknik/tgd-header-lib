@@ -11,6 +11,13 @@ TEST_CASE("Output content type") {
     REQUIRE(ss.str() == "vt2");
 }
 
+TEST_CASE("Output unknown content type") {
+    const auto lct = static_cast<tgd_header::layer_content_type>(99);
+    std::stringstream ss;
+    ss << lct;
+    REQUIRE(ss.str() == "[99]");
+}
+
 TEST_CASE("Output compression type: uncompressed") {
     const auto lct = tgd_header::layer_compression_type::uncompressed;
     std::stringstream ss;
