@@ -99,8 +99,8 @@ TEST_CASE("Managed buffer created from mutable_buffer") {
     tgd_header::buffer b{std::move(mb)};
     REQUIRE(std::distance(b.begin(), b.end()) == 20);
     REQUIRE(std::distance(b.cbegin(), b.cend()) == 20);
-    REQUIRE(mb.size() == 0);
-    REQUIRE(mb.data() == nullptr);
+    REQUIRE(mb.size() == 0); // NOLINT(bugprone-use-after-move) testing our own code here
+    REQUIRE(mb.data() == nullptr); // NOLINT(bugprone-use-after-move) testing our own code here
 
     REQUIRE(b);
     REQUIRE(b.managed());
