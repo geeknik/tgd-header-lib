@@ -38,7 +38,7 @@ TEST_CASE("Non-managed buffer") {
     REQUIRE_FALSE(b2.managed());
     REQUIRE(&a == b2.data());
     REQUIRE(b2.size() == 1);
-    REQUIRE_FALSE(b); // NOLINT(bugprone-use-after-move) testing our own code here
+    REQUIRE_FALSE(b); // NOLINT(bugprone-use-after-move,hicpp-invalid-access-moved) testing our own code here
 
     b2.clear();
     REQUIRE_FALSE(b2);
@@ -69,7 +69,7 @@ TEST_CASE("Managed pre-allocated buffer") {
     REQUIRE(b2.managed());
     REQUIRE(a == b2.data());
     REQUIRE(b2.size() == 20);
-    REQUIRE_FALSE(b); // NOLINT(bugprone-use-after-move) testing our own code here
+    REQUIRE_FALSE(b); // NOLINT(bugprone-use-after-move,hicpp-invalid-access-moved) testing our own code here
 
     b2.clear();
     REQUIRE_FALSE(b2);
@@ -113,8 +113,8 @@ TEST_CASE("Managed buffer created from mutable_buffer") {
     tgd_header::buffer b{std::move(mb)};
     REQUIRE(std::distance(b.begin(), b.end()) == 20);
     REQUIRE(std::distance(b.cbegin(), b.cend()) == 20);
-    REQUIRE(mb.size() == 0); // NOLINT(bugprone-use-after-move) testing our own code here
-    REQUIRE(mb.data() == nullptr); // NOLINT(bugprone-use-after-move) testing our own code here
+    REQUIRE(mb.size() == 0); // NOLINT(bugprone-use-after-move,hicpp-invalid-access-moved) testing our own code here
+    REQUIRE(mb.data() == nullptr); // NOLINT(bugprone-use-after-move,hicpp-invalid-access-moved) testing our own code here
 
     REQUIRE(b);
     REQUIRE(b.managed());

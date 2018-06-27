@@ -85,7 +85,7 @@ namespace tgd_header {
 
             template <typename ...TArgs>
             static int open_file(const std::string& filename, int flags, TArgs... args) {
-                const int fd = ::open(filename.c_str(), flags, args...); // NOLINT (cppcoreguidelines-pro-type-vararg,hicpp-vararg)
+                const int fd = ::open(filename.c_str(), flags, args...); // NOLINT(cppcoreguidelines-pro-type-vararg,hicpp-vararg)
 
                 if (fd < 0) {
                     throw std::system_error{errno, std::system_category(), std::string{"Error opening file '"} + filename + "': "};
@@ -155,7 +155,7 @@ namespace tgd_header {
                 return static_cast<std::size_t>(size);
 #else
                 // Unix implementation
-                struct stat s; // NOLINT clang-tidy
+                struct stat s; // NOLINT(cppcoreguidelines-pro-type-member-init,hicpp-member-init)
                 if (::fstat(m_fd, &s) != 0) {
                     throw std::system_error{errno, std::system_category(), "Could not get file size: "};
                 }

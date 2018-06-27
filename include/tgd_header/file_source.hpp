@@ -44,7 +44,7 @@ namespace tgd_header {
                 return 0;
             }
 
-            return open_file(filename, O_RDONLY | O_CLOEXEC); // NOLINT (hicpp-signed-bitwise)
+            return open_file(filename, O_RDONLY | O_CLOEXEC); // NOLINT(hicpp-signed-bitwise)
         }
 
     public:
