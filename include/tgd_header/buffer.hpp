@@ -96,10 +96,9 @@ namespace tgd_header {
      */
     class buffer {
 
-        static constexpr const size_t mask = 1ull << 63u;
-
         const char* m_data = nullptr;
         std::size_t m_size = 0;
+        bool m_managed = false;
 
     public:
 
@@ -122,7 +121,8 @@ namespace tgd_header {
          */
         explicit buffer(mutable_buffer&& mb) :
             m_data(mb.data()),
-            m_size(mb.size() | mask) {
+            m_size(mb.size()),
+            m_managed(true) {
             mb.release();
         }
 
@@ -141,7 +141,8 @@ namespace tgd_header {
          */
         explicit buffer(const char* data, std::size_t size, bool manage) noexcept :
             m_data(data),
-            m_size(size | (manage ? mask : 0)) {
+            m_size(size),
+            m_managed(manage) {
         }
 
         /**
@@ -187,8 +188,9 @@ namespace tgd_header {
          * managed, release the memory.
          */
         void clear() noexcept {
-            if ((m_size & mask) != 0u) {
+            if (m_managed) {
                 delete[] m_data;
+                m_managed = false;
             }
             m_data = nullptr;
             m_size = 0;
@@ -199,6 +201,7 @@ namespace tgd_header {
             using std::swap;
             swap(m_data, other.m_data);
             swap(m_size, other.m_size);
+            swap(m_managed, other.m_managed);
         }
 
         /// Does this buffer contain some data.
@@ -213,12 +216,12 @@ namespace tgd_header {
 
         /// Returns true if the buffer manages the memory allocation.
         bool managed() const noexcept {
-            return (m_size & mask) != 0;
+            return m_managed;
         }
 
         /// Return the size of the buffer contents.
         std::size_t size() const noexcept {
-            return m_size & ~mask;
+            return m_size;
         }
 
         const char* begin() const noexcept {
