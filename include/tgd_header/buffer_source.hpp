@@ -18,23 +18,36 @@ more documentation.
 
 #include "buffer.hpp"
 
-#include <cstdint>
+#include <cstddef>
 #include <stdexcept>
 
 namespace tgd_header {
 
+    /**
+     * Source for a tgd_header::reader based on a tgd_header::buffer. The
+     * buffer is taken by reference, it is not allowed to change as long
+     * as the buffer_source is used.
+     *
+     * Keeps track of where in the buffer we have been reading from.
+     */
     class buffer_source {
 
         const buffer& m_data;
-        std::uint64_t m_offset = 0;
+        std::size_t m_offset = 0;
 
     public:
 
+        /// Construct buffer_source from a buffer.
         explicit buffer_source(const buffer& data) :
             m_data(data) {
         }
 
-        buffer read(const std::uint64_t len) {
+        /**
+         * Read exactly len bytes from the source and return the results.
+         * If there aren't len bytes left in the source, an empty buffer
+         * is returned.
+         */
+        buffer read(const std::size_t len) {
             buffer buffer{m_data.data() + m_offset, len};
             if (m_offset + len > m_data.size()) {
                 buffer.clear();
@@ -44,7 +57,13 @@ namespace tgd_header {
             return buffer;
         }
 
-        void skip(const std::uint64_t len) {
+        /**
+         * Skip exactly len bytes from the source.
+         *
+         * @throws std::range_error If there aren't len bytes left in the
+         *                          source
+         */
+        void skip(const std::size_t len) {
             if (m_offset + len > m_data.size()) {
                 throw std::range_error{"Out of range"};
             }

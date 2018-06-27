@@ -19,7 +19,7 @@ more documentation.
 #include "buffer.hpp"
 #include "file.hpp"
 
-#include <cstdint>
+#include <cstddef>
 #include <fcntl.h>
 #include <stdexcept>
 #include <string>
@@ -30,21 +30,40 @@ more documentation.
 
 namespace tgd_header {
 
+    /**
+     * Source for a tgd_header::reader based on a file. The file is opened
+     * on construction and closed on destruction (unless the filename is
+     * empty or "-" in which case STDIN is used).
+     *
+     * Keeps track of where in the buffer we have been reading from.
+     */
     class file_source : public detail::file {
 
-        static int open_file(const std::string& filename) {
+        static int open_file_or_stdin(const std::string& filename) {
             if (filename.empty() || filename == "-") {
                 return 0;
             }
-            return ::open(filename.c_str(), O_RDONLY | O_CLOEXEC); // NOLINT (cppcoreguidelines-pro-type-vararg,hicpp-signed-bitwise,hicpp-vararg)
+
+            return open_file(filename, O_RDONLY | O_CLOEXEC); // NOLINT (hicpp-signed-bitwise)
         }
 
     public:
 
+        /**
+         * Construct file_source from contents of the specified file.
+         *
+         * @param filename Name of the input file. If empty or "-", STDIN
+         *                 is used.
+         */
         explicit file_source(const std::string& filename) :
-            file(open_file(filename)) {
+            file(open_file_or_stdin(filename)) {
         }
 
+        /**
+         * Read exactly len bytes from the source and return the results.
+         * If there aren't len bytes left in the source, an empty buffer
+         * is returned.
+         */
         buffer read(const std::size_t len) const {
             mutable_buffer mb{len};
 

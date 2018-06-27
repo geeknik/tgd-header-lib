@@ -22,6 +22,7 @@ more documentation.
 
 #include <cassert>
 #include <cstdint>
+#include <cstring>
 #include <fcntl.h>
 #include <stdexcept>
 #include <string>
@@ -34,32 +35,33 @@ namespace tgd_header {
 
     class file_sink : public detail::file {
 
-        static int open_file(const std::string& filename) {
+        static int open_file_or_stdout(const std::string& filename) {
             if (filename.empty() || filename == "-") {
                 return 1;
             }
-            return ::open(filename.c_str(), O_WRONLY | O_CREAT | O_TRUNC | O_CLOEXEC, 0644); // NOLINT (cppcoreguidelines-pro-type-vararg,hicpp-signed-bitwise,hicpp-vararg)
+
+            return open_file(filename, O_WRONLY | O_CREAT | O_TRUNC | O_CLOEXEC, 0644); // NOLINT (hicpp-signed-bitwise)
         }
 
         void write_impl(const char* data, std::size_t size) const {
             const auto write_length = ::write(fd(), data, size);
 
             if (static_cast<std::uint64_t>(write_length) != size) {
-                throw std::system_error{errno, std::system_category(), "Write error"};
+                throw std::system_error{errno, std::system_category(), std::string{"Error writing to file: "} + std::strerror(errno)};
             }
         }
 
     public:
 
         explicit file_sink(const std::string& filename) :
-            file(open_file(filename)) {
+            file(open_file_or_stdout(filename)) {
         }
 
         void write(const buffer& buffer) const {
             write_impl(buffer.data(), buffer.size());
         }
 
-        void padding(std::uint64_t size) const {
+        void padding(std::size_t size) const {
             assert(size < detail::align_bytes);
 
             static const char pad[detail::align_bytes] = {0};

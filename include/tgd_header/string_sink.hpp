@@ -37,7 +37,7 @@ namespace tgd_header {
             m_data.append(buffer.data(), buffer.size());
         }
 
-        void padding(std::uint64_t size) {
+        void padding(std::size_t size) {
             m_data.append(size, '\0');
         }
 

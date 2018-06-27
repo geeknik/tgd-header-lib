@@ -19,7 +19,7 @@ more documentation.
 #include "buffer.hpp"
 #include "file.hpp"
 
-#include <cstdint>
+#include <cstddef>
 #include <fcntl.h>
 #include <stdexcept>
 #include <string>
@@ -32,20 +32,31 @@ more documentation.
 
 namespace tgd_header {
 
+    /**
+     * Source for a tgd_header::reader based on a file. The file is opened
+     * and mmaped on construction and unmapped and closed on destruction.
+     *
+     * Keeps track of where in the buffer we have been reading from.
+     */
     class mmap_source : public detail::file {
 
         std::size_t m_size = 0;
         char* m_mapping = nullptr;
-        std::uint64_t m_offset = 0;
+        std::size_t m_offset = 0;
 
     public:
 
+        /**
+         * Construct mmap_source from contents of the specified file.
+         *
+         * @param filename Name of the input file.
+         */
         explicit mmap_source(const std::string& filename) :
-            file(filename, O_RDONLY | O_CLOEXEC) { // NOLINT(hicpp-signed-bitwise)
-            m_size = file_size();
-            m_mapping = static_cast<char*>(::mmap(nullptr, m_size, PROT_READ, MAP_PRIVATE, fd(), 0));
+            file(open_file(filename, O_RDONLY | O_CLOEXEC)), // NOLINT(hicpp-signed-bitwise)
+            m_size(file_size()),
+            m_mapping(static_cast<char*>(::mmap(nullptr, m_size, PROT_READ, MAP_PRIVATE, fd(), 0))) {
             if (!m_mapping) {
-                std::runtime_error{std::string{"Can't mmap file: "} + filename};
+                throw std::system_error{errno, std::system_category(), std::string{"Error mmapping file '"} + filename + "': " + std::strerror(errno)};
             }
         }
 
@@ -66,7 +77,7 @@ namespace tgd_header {
             return *this;
         }
 
-        ~mmap_source() {
+        ~mmap_source() noexcept {
             try {
                 close();
             } catch (...) {
@@ -89,16 +100,17 @@ namespace tgd_header {
             file::close();
         }
 
-        buffer read(const std::uint64_t len) {
-            if (m_offset + len > m_size) {
-                return buffer{};
-            }
+        buffer read(const std::size_t len) {
             buffer buffer{m_mapping + m_offset, len};
+            if (m_offset + len > m_size) {
+                buffer.clear();
+                return buffer;
+            }
             m_offset += len;
             return buffer;
         }
 
-        void skip(const std::uint64_t len) {
+        void skip(const std::size_t len) {
             if (m_offset + len > m_size) {
                 throw std::range_error{"Out of range"};
             }

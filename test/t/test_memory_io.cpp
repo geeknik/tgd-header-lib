@@ -24,6 +24,8 @@ TEST_CASE("Write to string_sink and read from buffer_source") {
     tgd_header::buffer data_buffer{data_str.data(), data_str.size()};
     tgd_header::buffer_source source{data_buffer};
 
+    REQUIRE_THROWS_AS(source.skip(10000), const std::range_error&);
+
     source.skip(padding_size);
 
     const auto in_buffer = source.read(data_size);

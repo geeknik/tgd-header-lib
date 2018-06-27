@@ -18,6 +18,7 @@ more documentation.
 
 #include <cassert>
 #include <cstddef>
+#include <cstring>
 #include <fcntl.h>
 #include <stdexcept>
 #include <string>
@@ -81,24 +82,23 @@ namespace tgd_header {
 
             int m_fd = -1;
 
+        protected:
+
+            template <typename ...TArgs>
+            static int open_file(const std::string& filename, int flags, TArgs... args) {
+                const int fd = ::open(filename.c_str(), flags, args...); // NOLINT (cppcoreguidelines-pro-type-vararg,hicpp-vararg)
+
+                if (fd < 0) {
+                    throw std::system_error{errno, std::system_category(), std::string{"Error opening file '"} + filename + "': " + std::strerror(errno)};
+                }
+
+                return fd;
+            }
+
         public:
 
-            explicit file(const char* name, int flags) :
-                m_fd(::open(name, flags)) { // NOLINT(cppcoreguidelines-pro-type-vararg,hicpp-vararg)
-                if (m_fd < 0) {
-                    std::runtime_error{std::string{"Can't open file: "} + name};
-                }
-            }
-
-            explicit file(const std::string& name, int flags) :
-                file(name.c_str(), flags) {
-            }
-
-            explicit file(int fd) :
+            explicit file(int fd) noexcept :
                 m_fd(fd) {
-                if (m_fd < 0) {
-                    std::runtime_error{"Can't open file"};
-                }
             }
 
             file(const file&) = delete;
@@ -134,7 +134,7 @@ namespace tgd_header {
                 if (m_fd >= 2) {
                     if (::close(m_fd) != 0) {
                         m_fd = -1;
-                        throw std::system_error{errno, std::system_category(), "Error when closing file"};
+                        throw std::system_error{errno, std::system_category(), std::string{"Error closing file: "} + std::strerror(errno)};
                     }
                     m_fd = -1;
                 }
@@ -151,14 +151,14 @@ namespace tgd_header {
                 // https://msdn.microsoft.com/en-us/library/dfbc2kec.aspx
                 const auto size = ::_filelengthi64(m_fd);
                 if (size < 0) {
-                    throw std::system_error{errno, std::system_category(), "Could not get file size"};
+                    throw std::system_error{errno, std::system_category(), std::string{"Could not get file size: "} + std::strerror(errno)};
                 }
                 return static_cast<std::size_t>(size);
 #else
                 // Unix implementation
                 struct stat s; // NOLINT clang-tidy
                 if (::fstat(m_fd, &s) != 0) {
-                    throw std::system_error{errno, std::system_category(), "Could not get file size"};
+                    throw std::system_error{errno, std::system_category(), std::string{"Could not get file size: "} + std::strerror(errno)};
                 }
                 return static_cast<std::size_t>(s.st_size);
 #endif
