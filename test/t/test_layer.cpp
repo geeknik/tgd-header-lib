@@ -159,6 +159,18 @@ TEST_CASE("read_content() can be called multiple times") {
     REQUIRE(!std::strcmp(new_layer.content().data(), content));
 }
 
+TEST_CASE("auto-skips content if read_content() is not called") {
+    const auto out = create_test_layer();
+
+    // decode layer again and check it
+    tgd_header::buffer b{out.data(), out.size()};
+    tgd_header::buffer_source source{b};
+    tgd_header::reader<tgd_header::buffer_source> reader{source};
+
+    REQUIRE(reader.next_layer());
+    REQUIRE_FALSE(reader.next_layer());
+}
+
 TEST_CASE("Error in compressed content is detected") {
     auto out = create_test_layer();
 
