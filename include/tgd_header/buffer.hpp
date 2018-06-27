@@ -161,7 +161,7 @@ namespace tgd_header {
         buffer(const buffer&) = delete;
         buffer& operator=(const buffer&) = delete;
 
-        /// Buffers can be moved.
+        /// Buffers can be move constructed.
         buffer(buffer&& other) noexcept :
             m_data(other.m_data),
             m_size(other.m_size),
@@ -171,7 +171,7 @@ namespace tgd_header {
             other.m_managed = false;
         }
 
-        /// Buffers can be moved.
+        /// Buffers can be move assigned.
         buffer& operator=(buffer&& other) noexcept {
             swap(other);
             return *this;

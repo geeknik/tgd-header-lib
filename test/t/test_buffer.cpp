@@ -33,8 +33,15 @@ TEST_CASE("Non-managed buffer") {
     REQUIRE_FALSE(b.managed());
     REQUIRE(&a == b.data());
     REQUIRE(b.size() == 1);
-    b.clear();
-    REQUIRE_FALSE(b);
+
+    tgd_header::buffer b2{std::move(b)};
+    REQUIRE_FALSE(b2.managed());
+    REQUIRE(&a == b2.data());
+    REQUIRE(b2.size() == 1);
+    REQUIRE_FALSE(b); // NOLINT(bugprone-use-after-move) testing our own code here
+
+    b2.clear();
+    REQUIRE_FALSE(b2);
 }
 
 TEST_CASE("Non-managed buffer (explicit)") {
@@ -57,8 +64,15 @@ TEST_CASE("Managed pre-allocated buffer") {
     REQUIRE(b.size() == 20);
     REQUIRE(std::distance(b.begin(), b.end()) == 20);
     REQUIRE(std::distance(b.cbegin(), b.cend()) == 20);
-    b.clear();
-    REQUIRE_FALSE(b);
+
+    tgd_header::buffer b2{std::move(b)};
+    REQUIRE(b2.managed());
+    REQUIRE(a == b2.data());
+    REQUIRE(b2.size() == 20);
+    REQUIRE_FALSE(b); // NOLINT(bugprone-use-after-move) testing our own code here
+
+    b2.clear();
+    REQUIRE_FALSE(b2);
 }
 
 TEST_CASE("Unmanaged buffer from std::array") {
