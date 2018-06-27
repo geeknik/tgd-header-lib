@@ -16,6 +16,7 @@ more documentation.
  * @brief Contains the file class.
  */
 
+#include <cassert>
 #include <cstddef>
 #include <fcntl.h>
 #include <stdexcept>
@@ -109,10 +110,12 @@ namespace tgd_header {
             }
 
             file& operator=(file&& other) noexcept {
+                assert(this != &other);
                 try {
                     close();
                 } catch (...) {
-                    // ignore errors so that the move can be noexcept
+                    // ignore exceptions so that the move assignment
+                    // can be noexcept
                 }
                 m_fd = other.m_fd;
                 other.m_fd = -1;
