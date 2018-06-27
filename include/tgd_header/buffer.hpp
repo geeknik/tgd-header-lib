@@ -26,14 +26,17 @@ namespace tgd_header {
     /**
      * A mutable_buffer is created by specifying the size the buffer should
      * have. It can then be filled with data. After that it will be turned
-     * into (nonmutable) buffer by creating a buffer with the mutable_buffer
-     * as only parameter on the constructor.
+     * into a (non-mutable) buffer by instantiating a buffer with the
+     * mutable_buffer as the only parameter on the constructor.
+     *
+     * The size of a mutable_buffer can not be changed after construction.
+     * If you need a resizable buffer, use a std::string for instance.
      */
     class mutable_buffer {
 
         friend class buffer;
 
-        std::unique_ptr<char[]> m_data;
+        std::unique_ptr<char[]> m_data = nullptr;
         std::size_t m_size;
 
         void release() noexcept {
@@ -45,34 +48,40 @@ namespace tgd_header {
 
         /**
          * Construct buffer with specified size. This will allocate the
-         * needed memory using new.
+         * required memory on the heap using new.
          */
         explicit mutable_buffer(std::size_t size) :
             m_size(size) {
             m_data.reset(new char[size]); // NOLINT(modernize-make-unique) (not available in C++11)
         }
 
+        /// Return a pointer to the data in the buffer.
         char* data() const noexcept {
             return m_data.get();
         }
 
+        /// Return the size of the buffer.
         std::size_t size() const noexcept {
             return m_size;
         }
 
+        /// Iterator pointing to the beginning of the data.
         char* begin() noexcept {
             return m_data.get();
         }
 
+        /// Iterator pointing to the end of the data.
         char* end() noexcept {
             return m_data.get() + m_size;
         }
 
-        const char* cbegin() noexcept {
+        /// Iterator pointing to the beginning of the data.
+        const char* cbegin() const noexcept {
             return m_data.get();
         }
 
-        const char* cend() noexcept {
+        /// Iterator pointing to the end of the data.
+        const char* cend() const noexcept {
             return m_data.get() + m_size;
         }
 
@@ -80,15 +89,15 @@ namespace tgd_header {
 
     /**
      * A buffer is a piece of memory at some location and with a specified
-     * size. Buffers can be exist in three forms:
+     * size. Buffers can exist in three forms:
      *
      * * The empty buffer doesn't contain any memory at all. It is created
      *   using the default constructor or by using the clear() function on
      *   any existing buffer.
      * * The buffer can point to some pre-existing memory range that some
-     *   other part of your program allocated and still manages. You have
-     *   to make sure to keep this memory around until the buffer is
-     *   destroyed.
+     *   other part of this library or your program allocated and still
+     *   manages. You have to make sure to keep this memory around as long
+     *   as this buffer is still used.
      * * The buffer can allocate memory itself or take over the memory
      *   management for some memory you give it access to. In this case
      *   the buffer will release the memory (using delete[]) when the clear()
@@ -153,8 +162,13 @@ namespace tgd_header {
         buffer& operator=(const buffer&) = delete;
 
         /// Buffers can be moved.
-        buffer(buffer&& other) noexcept {
-            swap(other);
+        buffer(buffer&& other) noexcept :
+            m_data(other.m_data),
+            m_size(other.m_size),
+            m_managed(other.m_managed) {
+            other.m_data = nullptr;
+            other.m_size = 0;
+            other.m_managed = false;
         }
 
         /// Buffers can be moved.
@@ -224,20 +238,24 @@ namespace tgd_header {
             return m_size;
         }
 
-        const char* begin() const noexcept {
+        /// Iterator pointing to the beginning of the data.
+        const char* cbegin() const noexcept {
             return m_data;
         }
 
-        const char* end() const noexcept {
+        /// Iterator pointing to the end of the data.
+        const char* cend() const noexcept {
             return m_data + size();
         }
 
-        const char* cbegin() const noexcept {
-            return begin();
+        /// Iterator pointing to the beginning of the data.
+        const char* begin() const noexcept {
+            return cbegin();
         }
 
-        const char* cend() const noexcept {
-            return end();
+        /// Iterator pointing to the end of the data.
+        const char* end() const noexcept {
+            return cend();
         }
 
     }; // class buffer
