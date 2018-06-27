@@ -13,9 +13,10 @@
 #include <cstring>
 #include <string>
 
+static const char content[] = "the quick brown fox jumps over the lazy dog";
+
 TEST_CASE("Encode and decode layer") {
     const char name[] = "test";
-    const char content[] = "the quick brown fox jumps over the lazy dog";
 
     auto ct = tgd_header::layer_compression_type::uncompressed;
 
@@ -123,8 +124,6 @@ TEST_CASE("Decoding incomplete layer throws") {
     REQUIRE_THROWS_AS(tgd_header::layer{data}, const tgd_header::format_error&);
 }
 
-static const char content[] = "the quick brown fox jumps over the lazy dog";
-
 static std::string create_test_layer() {
 
     // set up layer
@@ -141,6 +140,23 @@ static std::string create_test_layer() {
     layer.write(sink);
 
     return out;
+}
+
+TEST_CASE("read_content() can be called multiple times") {
+    const auto out = create_test_layer();
+
+    // decode layer again and check it
+    tgd_header::buffer b{out.data(), out.size()};
+    tgd_header::buffer_source source{b};
+    tgd_header::reader<tgd_header::buffer_source> reader{source};
+    auto& new_layer = reader.next_layer();
+
+    reader.read_content();
+    reader.read_content();
+    new_layer.decode_content();
+
+    REQUIRE(new_layer.content_length() == sizeof(content));
+    REQUIRE(!std::strcmp(new_layer.content().data(), content));
 }
 
 TEST_CASE("Error in compressed content is detected") {

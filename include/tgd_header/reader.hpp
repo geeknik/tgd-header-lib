@@ -56,14 +56,13 @@ namespace tgd_header {
             return m_layer;
         }
 
-        const layer& get_layer() const noexcept {
-            return m_layer;
-        }
-
         void read_content() {
-            assert(m_layer);
-            m_layer.set_wire_content(m_source.read(detail::padded_size(m_layer.wire_content_length())));
-            m_content_is_read = true;
+            assert(m_layer && "You have to call next_layer() first");
+
+            if (!m_content_is_read) {
+                m_layer.set_wire_content(m_source.read(detail::padded_size(m_layer.wire_content_length())));
+                m_content_is_read = true;
+            }
         }
 
     }; // class reader
