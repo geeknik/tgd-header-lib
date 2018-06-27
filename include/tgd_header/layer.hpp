@@ -94,7 +94,7 @@ namespace tgd_header {
             }
 
             m_wire_content_length = output_size;
-            m_wire_content = buffer{output};
+            m_wire_content = buffer{std::move(output)};
         }
 
         void decode_zlib() {
@@ -117,7 +117,7 @@ namespace tgd_header {
                 throw format_error{"wrong original size on compressed data"};
             }
 
-            m_content = buffer{mb};
+            m_content = buffer{std::move(mb)};
         }
 
         std::array<char, detail::header_size> serialize_header() {

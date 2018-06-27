@@ -96,7 +96,7 @@ TEST_CASE("Managed buffer created from mutable_buffer") {
 
     std::copy(data.begin(), data.end(), mb.begin());
 
-    tgd_header::buffer b{mb};
+    tgd_header::buffer b{std::move(mb)};
     REQUIRE(std::distance(b.begin(), b.end()) == 20);
     REQUIRE(std::distance(b.cbegin(), b.cend()) == 20);
     REQUIRE(mb.size() == 0);

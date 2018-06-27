@@ -50,7 +50,7 @@ namespace tgd_header {
 
             const auto read_length = ::read(fd(), mb.data(), mb.size());
 
-            buffer buffer{mb};
+            buffer buffer{std::move(mb)};
             if (read_length == 0) {
                 buffer.clear();
                 return buffer;

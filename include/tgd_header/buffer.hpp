@@ -120,7 +120,7 @@ namespace tgd_header {
          * Construct a buffer from a mutable buffer. Management of the
          * memory will be taken over from the mutable_buffer.
          */
-        explicit buffer(mutable_buffer& mb) :
+        explicit buffer(mutable_buffer&& mb) :
             m_data(mb.data()),
             m_size(mb.size() | mask) {
             mb.release();
@@ -179,7 +179,7 @@ namespace tgd_header {
         buffer copy() const {
             mutable_buffer mbuffer{size()};
             std::copy_n(data(), size(), mbuffer.data());
-            return buffer{mbuffer};
+            return buffer{std::move(mbuffer)};
         }
 
         /**
