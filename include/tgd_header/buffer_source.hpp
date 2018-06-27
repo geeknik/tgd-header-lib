@@ -35,10 +35,11 @@ namespace tgd_header {
         }
 
         buffer read(const std::uint64_t len) {
-            if (m_offset + len > m_data.size()) {
-                return buffer{};
-            }
             buffer buffer{m_data.data() + m_offset, len};
+            if (m_offset + len > m_data.size()) {
+                buffer.clear();
+                return buffer;
+            }
             m_offset += len;
             return buffer;
         }
