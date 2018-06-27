@@ -63,7 +63,7 @@ TEST_CASE("Encode and decode layer") {
     REQUIRE(!std::strcmp(new_layer.content().data(), content));
 }
 
-bool buffer_is_equal(const tgd_header::buffer& buf, const char* str) noexcept {
+static bool buffer_is_equal(const tgd_header::buffer& buf, const char* str) noexcept {
     if (buf.size() != std::strlen(str) + 1) {
         return false;
     }
@@ -76,7 +76,7 @@ TEST_CASE("Set name using cstring") {
     tgd_header::layer layer;
     layer.set_name(name);
     REQUIRE(layer.name_length() == 10);
-    REQUIRE(buffer_is_equal(layer.name(), "some_name"));
+    REQUIRE(buffer_is_equal(layer.name(), name));
 }
 
 TEST_CASE("Set name using buffer") {
@@ -86,9 +86,8 @@ TEST_CASE("Set name using buffer") {
     tgd_header::layer layer;
     layer.set_name(std::move(buffer));
     REQUIRE(layer.name_length() == 13);
-    REQUIRE(buffer_is_equal(layer.name(), "another_name"));
+    REQUIRE(buffer_is_equal(layer.name(), name));
 }
-
 
 TEST_CASE("Set name using ptr and length") {
     const char name[] = "a_name";
@@ -96,7 +95,7 @@ TEST_CASE("Set name using ptr and length") {
     tgd_header::layer layer;
     layer.set_name(name, sizeof(name));
     REQUIRE(layer.name_length() == 7);
-    REQUIRE(buffer_is_equal(layer.name(), "a_name"));
+    REQUIRE(buffer_is_equal(layer.name(), name));
 }
 
 TEST_CASE("Set content using buffer") {
@@ -106,9 +105,8 @@ TEST_CASE("Set content using buffer") {
     tgd_header::layer layer;
     layer.set_content(std::move(buffer));
     REQUIRE(layer.content_length() == 5);
-    REQUIRE(buffer_is_equal(layer.content(), "body"));
+    REQUIRE(buffer_is_equal(layer.content(), content));
 }
-
 
 TEST_CASE("Set content using ptr and length") {
     const char content[] = "a_body";
@@ -116,7 +114,7 @@ TEST_CASE("Set content using ptr and length") {
     tgd_header::layer layer;
     layer.set_content(content, sizeof(content));
     REQUIRE(layer.content_length() == 7);
-    REQUIRE(buffer_is_equal(layer.content(), "a_body"));
+    REQUIRE(buffer_is_equal(layer.content(), content));
 }
 
 TEST_CASE("Decoding incomplete layer throws") {
