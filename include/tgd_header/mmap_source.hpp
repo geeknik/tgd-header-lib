@@ -56,7 +56,7 @@ namespace tgd_header {
             m_size(file_size()),
             m_mapping(static_cast<char*>(::mmap(nullptr, m_size, PROT_READ, MAP_PRIVATE, fd(), 0))) {
             if (!m_mapping) {
-                throw std::system_error{errno, std::system_category(), std::string{"Error mmapping file '"} + filename + "': " + std::strerror(errno)};
+                throw std::system_error{errno, std::system_category(), std::string{"Error mmapping file '"} + filename + "': "};
             }
         }
 

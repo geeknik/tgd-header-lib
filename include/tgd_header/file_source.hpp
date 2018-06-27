@@ -79,13 +79,13 @@ namespace tgd_header {
                 return buffer;
             }
 
-            throw std::system_error{errno, std::system_category(), "Read error"};
+            throw std::system_error{errno, std::system_category(), "Read error: "};
         }
 
         void skip(const std::size_t len) const {
             const auto result = ::lseek(fd(), static_cast<off_t>(len), SEEK_CUR);
             if (result < 0) {
-                throw std::system_error{errno, std::system_category(), "Seek error"};
+                throw std::system_error{errno, std::system_category(), "Seek error: "};
             }
         }
 

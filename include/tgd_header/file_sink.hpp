@@ -22,7 +22,6 @@ more documentation.
 
 #include <cassert>
 #include <cstdint>
-#include <cstring>
 #include <fcntl.h>
 #include <stdexcept>
 #include <string>
@@ -47,7 +46,7 @@ namespace tgd_header {
             const auto write_length = ::write(fd(), data, size);
 
             if (static_cast<std::uint64_t>(write_length) != size) {
-                throw std::system_error{errno, std::system_category(), std::string{"Error writing to file: "} + std::strerror(errno)};
+                throw std::system_error{errno, std::system_category(), "Error writing to file: "};
             }
         }
 

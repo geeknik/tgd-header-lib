@@ -18,7 +18,6 @@ more documentation.
 
 #include <cassert>
 #include <cstddef>
-#include <cstring>
 #include <fcntl.h>
 #include <stdexcept>
 #include <string>
@@ -89,7 +88,7 @@ namespace tgd_header {
                 const int fd = ::open(filename.c_str(), flags, args...); // NOLINT (cppcoreguidelines-pro-type-vararg,hicpp-vararg)
 
                 if (fd < 0) {
-                    throw std::system_error{errno, std::system_category(), std::string{"Error opening file '"} + filename + "': " + std::strerror(errno)};
+                    throw std::system_error{errno, std::system_category(), std::string{"Error opening file '"} + filename + "': "};
                 }
 
                 return fd;
@@ -134,7 +133,7 @@ namespace tgd_header {
                 if (m_fd >= 2) {
                     if (::close(m_fd) != 0) {
                         m_fd = -1;
-                        throw std::system_error{errno, std::system_category(), std::string{"Error closing file: "} + std::strerror(errno)};
+                        throw std::system_error{errno, std::system_category(), "Error closing file: "};
                     }
                     m_fd = -1;
                 }
@@ -151,14 +150,14 @@ namespace tgd_header {
                 // https://msdn.microsoft.com/en-us/library/dfbc2kec.aspx
                 const auto size = ::_filelengthi64(m_fd);
                 if (size < 0) {
-                    throw std::system_error{errno, std::system_category(), std::string{"Could not get file size: "} + std::strerror(errno)};
+                    throw std::system_error{errno, std::system_category(), "Could not get file size: "};
                 }
                 return static_cast<std::size_t>(size);
 #else
                 // Unix implementation
                 struct stat s; // NOLINT clang-tidy
                 if (::fstat(m_fd, &s) != 0) {
-                    throw std::system_error{errno, std::system_category(), std::string{"Could not get file size: "} + std::strerror(errno)};
+                    throw std::system_error{errno, std::system_category(), "Could not get file size: "};
                 }
                 return static_cast<std::size_t>(s.st_size);
 #endif
