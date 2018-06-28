@@ -1,15 +1,18 @@
 /*****************************************************************************
 
-  tgd-layer
+  tgd-info
 
-  Show metadata of a layer from a tile file.
+  Show metadata of all layers or the named layer from a tile file.
 
-  Reads from the specified input file and writes metadata of all layers with
-  the specified name to stdout. If the layer doesn't exist, nothing is written.
+  Reads from the specified input file and writes metadata to stdout. If the
+  option -n/--name was no specified, all layers are examined, otherwise only
+  the layers with the specified name.
 
   Examples:
 
-  tgd-layer input.tgd buildings
+  tgd-info input.tgd
+
+  tgd-info input.tgd -n roads
 
 *****************************************************************************/
 
@@ -19,27 +22,40 @@
 #include <tgd_header/reader.hpp>
 #include <tgd_header/stream.hpp>
 
-#include <iostream>
-#include <string>
+#include <clara.hpp>
 
-void print_usage() {
-    std::cout << "tgd-layer FILE LAYER\n";
-    std::cout << "Show metadata of layer LAYER in the FILE.\n";
-}
+#include <iostream>
 
 int main(int argc, char *argv[]) {
-    if (argc != 3) {
-        print_usage();
+    std::string input_file_name;
+    std::string layer_name;
+    bool help = false;
+
+    const auto cli
+        = clara::Opt(layer_name, "name")
+            ["-n"]["--name"]
+            ("layer name")
+        | clara::Help(help)
+        | clara::Arg(input_file_name, "FILE").required()
+            ("data");
+
+    const auto result = cli.parse(clara::Args(argc, argv));
+    if (!result) {
+        std::cerr << "Error in command line: " << result.errorMessage() << '\n';
         return 2;
     }
 
-    std::string name{argv[2]};
+    if (help) {
+        std::cout << "Show layer metadata.\n\n";
+        std::cout << cli;
+        return 0;
+    }
 
-    tgd_header::file_source source{argv[1]};
+    tgd_header::file_source source{input_file_name};
     tgd_header::reader<decltype(source)> reader{source};
 
     while (auto& layer = reader.next_layer()) {
-        if (layer.name().data() == name) {
+        if (layer_name.empty() || layer_name == layer.name().data()) {
             reader.read_content();
             layer.decode_content();
             std::cout << "LAYER " << layer.name().data() << '\n';

@@ -17,16 +17,14 @@ target_link_libraries(tgd-export ${ZLIB_LIBRARIES})
 add_executable(tgd-filter tgd-filter.cpp)
 target_link_libraries(tgd-filter ${ZLIB_LIBRARIES})
 
-add_executable(tgd-layer tgd-layer.cpp)
-target_link_libraries(tgd-layer ${ZLIB_LIBRARIES})
-
-add_executable(tgd-list tgd-list.cpp)
-target_link_libraries(tgd-list ${ZLIB_LIBRARIES})
+add_executable(tgd-info tgd-info.cpp)
+target_link_libraries(tgd-info ${ZLIB_LIBRARIES})
 
 #-----------------------------------------------------------------------------
 
 set(HELP_TESTS cat
-               filter)
+               filter
+               info)
 
 foreach(example ${HELP_TESTS})
 
