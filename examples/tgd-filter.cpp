@@ -5,13 +5,17 @@
   Filter tile files by name and/or content type.
 
   Reads from the input file and writes all matching layers to the output file
-  (or stdout if no output file was specified).
+  (or stdout if no output file was specified). Layers must fulfill all
+  requirements to match.
 
   Examples:
 
   tgd-filter input.tgd -o output.tgd -n roads # all layers named "roads"
 
   tgd-filter input.tgd -o output.tgd -t png # all embedded png files
+
+  tgd-filter input.tgd -o output.tgd -z 12 -n water # all layers with zoom
+                                                    # level 12 and name "water"
 
 *****************************************************************************/
 
@@ -23,32 +27,42 @@
 
 #include <clara.hpp>
 
+#include <cstdint>
 #include <iostream>
 #include <string>
+
+static constexpr const std::uint8_t any_zoom = 255;
 
 class matcher {
 
     std::string m_name;
     tgd_header::layer_content_type m_type;
+    std::uint8_t m_zoom;
 
 public:
 
-    matcher(std::string name, tgd_header::layer_content_type type) :
+    matcher(std::string name, tgd_header::layer_content_type type, std::uint8_t zoom) :
         m_name(std::move(name)),
-        m_type(type) {
+        m_type(type),
+        m_zoom(zoom) {
     }
 
-    bool operator()(const tgd_header::layer& layer) {
-        if (m_name.empty() && m_type == tgd_header::layer_content_type::unknown) {
+    bool operator()(const tgd_header::layer& layer) noexcept {
+        if (m_name.empty() && m_type == tgd_header::layer_content_type::unknown && m_zoom == any_zoom) {
             return true;
         }
-        if (m_type != tgd_header::layer_content_type::unknown && m_type == layer.content_type()) {
-            return true;
+
+        if (m_zoom != any_zoom && m_zoom != layer.tile().zoom()) {
+            return false;
         }
-        if (!m_name.empty() && m_name == layer.name().data()) {
-            return true;
+        if (m_type != tgd_header::layer_content_type::unknown && m_type != layer.content_type()) {
+            return false;
         }
-        return false;
+        if (!m_name.empty() && m_name != layer.name().data()) {
+            return false;
+        }
+
+        return true;
     }
 
 }; // class matcher
@@ -78,18 +92,26 @@ int main(int argc, char *argv[]) {
     std::string output_file_name;
     std::string layer_name;
     std::string content_type;
+    int zoom = any_zoom;
     bool help = false;
+    bool verbose = false;
 
     const auto cli
         = clara::Opt(layer_name, "name")
             ["-n"]["--name"]
-            ("layer name")
+            ("filter by layer name")
         | clara::Opt(content_type, "type")
             ["-t"]["--type"]
-            ("content type")
+            ("filter by content type")
         | clara::Opt(output_file_name, "file")
             ["-o"]["--output"]
             ("output file (default: stdout)")
+        | clara::Opt(verbose)
+            ["-v"]["--verbose"]
+            ("verbose output")
+        | clara::Opt(zoom, "zoom")
+            ["-z"]["--zoom"]
+            ("filter by zoom level (default: any)")
         | clara::Help(help)
         | clara::Arg(input_file_name, "FILE")
             ("data");
@@ -101,7 +123,7 @@ int main(int argc, char *argv[]) {
     }
 
     if (help) {
-        std::cout << "Filter tile input file by name and/or content type.\n\n";
+        std::cout << "Filter tile input file by name, content type, and/or zoom level.\n\n";
         std::cout << cli;
         return 0;
     }
@@ -116,7 +138,12 @@ int main(int argc, char *argv[]) {
         return 2;
     }
 
-    matcher match{layer_name, parse_content_type(content_type)};
+    if (zoom != 255 && (zoom < 0 || zoom > 30)) {
+        std::cerr << "Invalid value for -z/--zoom option.\n";
+        return 2;
+    }
+
+    matcher match{layer_name, parse_content_type(content_type), std::uint8_t(zoom)};
 
     tgd_header::file_source source{input_file_name};
     tgd_header::reader<decltype(source)> reader{source};
@@ -124,9 +151,22 @@ int main(int argc, char *argv[]) {
     tgd_header::file_sink output_file{output_file_name};
 
     while (auto& layer = reader.next_layer()) {
+        if (verbose) {
+            std::cout << "Considering layer '"
+                      << layer.name().data()
+                      << "' of type "
+                      << layer.content_type()
+                      << " in tile "
+                      << layer.tile();
+        }
         if (match(layer)) {
+            if (verbose) {
+                std::cout << ": MATCHED\n";
+            }
             reader.read_content();
             layer.write(output_file);
+        } else if (verbose) {
+            std::cout << ": DOES NOT MATCH\n";
         }
     }
 }
