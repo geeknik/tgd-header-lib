@@ -31,9 +31,31 @@ foreach(example ${HELP_TESTS})
 
     add_test(NAME example_${example}_help COMMAND tgd-${example} -h)
 
+    add_test(NAME example_${example}_bare COMMAND tgd-${example})
+    set_tests_properties(example_${example}_bare PROPERTIES WILL_FAIL true)
+
     add_test(NAME example_${example}_error COMMAND tgd-${example} --nonexistent-option)
     set_tests_properties(example_${example}_error PROPERTIES WILL_FAIL true)
 
 endforeach()
 
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/test-a.png" "A")
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/test-b.mvt" "B")
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/test-c.jpg" "C")
+
+add_test(NAME example_cat_create COMMAND tgd-cat test-a.png test-b.mvt test-c.jpg -o test-tile.tgd)
+
+add_test(NAME example_info_all COMMAND tgd-info test-tile.tgd)
+set_tests_properties(example_info_all PROPERTIES PASS_REGULAR_EXPRESSION "^LAYER test-a\n")
+set_tests_properties(example_info_all PROPERTIES DEPENDS example_cat_create)
+
+add_test(NAME example_info_layer_b COMMAND tgd-info test-tile.tgd -n test-b)
+set_tests_properties(example_info_layer_b PROPERTIES PASS_REGULAR_EXPRESSION "^LAYER test-b\n")
+set_tests_properties(example_info_layer_b PROPERTIES DEPENDS example_cat_create)
+
+add_test(NAME example_filter_layer_c COMMAND tgd-filter test-tile.tgd -n test-c -o test-c.tgd)
+set_tests_properties(example_filter_layer_c PROPERTIES DEPENDS example_cat_create)
+
+add_test(NAME example_export_layer_c COMMAND tgd-export test-c.tgd -o test-c-generated.jpg)
+set_tests_properties(example_export_layer_c PROPERTIES DEPENDS example_filter_layer_c)
 
