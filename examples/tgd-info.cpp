@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
             ["-n"]["--name"]
             ("layer name")
         | clara::Help(help)
-        | clara::Arg(input_file_name, "FILE").required()
+        | clara::Arg(input_file_name, "FILE")
             ("data");
 
     const auto result = cli.parse(clara::Args(argc, argv));
@@ -49,6 +49,11 @@ int main(int argc, char *argv[]) {
         std::cout << "Show layer metadata.\n\n";
         std::cout << cli;
         return 0;
+    }
+
+    if (input_file_name.empty()) {
+        std::cerr << "Missing input file. Try 'tgd-info -h'.\n";
+        return 2;
     }
 
     tgd_header::file_source source{input_file_name};

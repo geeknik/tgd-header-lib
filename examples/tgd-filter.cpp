@@ -91,7 +91,7 @@ int main(int argc, char *argv[]) {
             ["-o"]["--output"]
             ("output file (default: stdout)")
         | clara::Help(help)
-        | clara::Arg(input_file_name, "FILE").required()
+        | clara::Arg(input_file_name, "FILE")
             ("data");
 
     const auto result = cli.parse(clara::Args(argc, argv));
@@ -104,6 +104,11 @@ int main(int argc, char *argv[]) {
         std::cout << "Filter tile input file by name and/or content type.\n\n";
         std::cout << cli;
         return 0;
+    }
+
+    if (input_file_name.empty()) {
+        std::cerr << "Missing input file. Try 'tgd-filter -h'.\n";
+        return 2;
     }
 
     matcher match{layer_name, parse_content_type(content_type)};

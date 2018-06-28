@@ -113,7 +113,7 @@ int main(int argc, char *argv[]) {
             ["-o"]["--output"]
             ("output file (default: stdout)")
         | clara::Help(help)
-        | clara::Arg(input_files, "FILE").required()
+        | clara::Arg(input_files, "FILE")
             ("data");
 
     const auto result = cli.parse(clara::Args(argc, argv));
@@ -126,6 +126,11 @@ int main(int argc, char *argv[]) {
         std::cout << "Concatenate layers into a tile.\n\n";
         std::cout << cli;
         return 0;
+    }
+
+    if (input_files.empty()) {
+        std::cerr << "Missing input file(s). Try 'tgd-cat -h'.\n";
+        return 2;
     }
 
     tgd_header::layer_compression_type compression =
