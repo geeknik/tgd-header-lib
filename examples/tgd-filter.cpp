@@ -111,6 +111,11 @@ int main(int argc, char *argv[]) {
         return 2;
     }
 
+    if (output_file_name.empty()) {
+        std::cerr << "Missing -o/--output option. Try 'tgd-filter -h'.\n";
+        return 2;
+    }
+
     matcher match{layer_name, parse_content_type(content_type)};
 
     tgd_header::file_source source{input_file_name};
