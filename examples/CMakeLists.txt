@@ -23,6 +23,7 @@ target_link_libraries(tgd-info ${ZLIB_LIBRARIES})
 #-----------------------------------------------------------------------------
 
 set(HELP_TESTS cat
+               export
                filter
                info)
 
