@@ -60,10 +60,10 @@ int main(int argc, char *argv[]) {
     tgd_header::reader<decltype(source)> reader{source};
 
     while (auto& layer = reader.next_layer()) {
-        if (layer_name.empty() || layer_name == layer.name().data()) {
+        if (layer_name.empty() || layer.has_name(layer_name)) {
             reader.read_content();
             layer.decode_content();
-            std::cout << "LAYER " << layer.name().data() << '\n';
+            std::cout << "LAYER " << layer.name() << '\n';
             std::cout << "  tile (zoom/x/y): " << layer.tile() << '\n';
             std::cout << "  content type:    " << layer.content_type() << '\n';
             std::cout << "  compression:     " << layer.compression_type() << '\n';

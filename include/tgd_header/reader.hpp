@@ -47,7 +47,7 @@ namespace tgd_header {
                 m_layer = layer{buffer};
 
                 if (m_layer) {
-                    m_layer.set_name_internal(m_source.read(detail::padded_size(m_layer.name_length())));
+                    m_layer.set_name_internal(m_source.read(detail::padded_size(m_layer.name_length() + 1)));
                 }
             } else {
                 m_layer = {};

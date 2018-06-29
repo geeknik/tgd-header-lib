@@ -83,7 +83,7 @@ static void write_layer(const std::string& filename, tgd_header::file_sink& outp
     }
 
     const auto layer_name = basename(f.first);
-    layer.set_name(tgd_header::buffer{layer_name.data(), layer_name.size()});
+    layer.set_name(tgd_header::buffer{layer_name.data(), layer_name.size() + 1});
 
     layer.set_tile(tile);
 

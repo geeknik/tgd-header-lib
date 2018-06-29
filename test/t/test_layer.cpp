@@ -55,8 +55,8 @@ TEST_CASE("Encode and decode layer") {
     REQUIRE(new_layer.content_type() == tgd_header::layer_content_type::unknown);
     REQUIRE(new_layer.compression_type() == ct);
     REQUIRE(new_layer.tile() == tgd_header::tile_address(4, 3, 2));
-    REQUIRE(new_layer.name_length() == sizeof(name));
-    REQUIRE(!std::strncmp(new_layer.name().data(), name, std::strlen(name)));
+    REQUIRE(new_layer.name_length() == sizeof(name) - 1);
+    REQUIRE(!std::strcmp(new_layer.name(), name));
 
     reader.read_content();
     new_layer.decode_content();
@@ -64,20 +64,22 @@ TEST_CASE("Encode and decode layer") {
     REQUIRE(!std::strcmp(new_layer.content().data(), content));
 }
 
-static bool buffer_is_equal(const tgd_header::buffer& buf, const char* str) noexcept {
-    if (buf.size() != std::strlen(str) + 1) {
-        return false;
-    }
-    return !std::strcmp(buf.data(), str);
-}
-
 TEST_CASE("Set name using cstring") {
     const char* name = "some_name";
 
     tgd_header::layer layer;
     layer.set_name(name);
-    REQUIRE(layer.name_length() == 10);
-    REQUIRE(buffer_is_equal(layer.name(), name));
+    REQUIRE(layer.name_length() == 9);
+    REQUIRE(layer.has_name(name));
+
+    REQUIRE_FALSE(layer.has_name("some_other_name"));
+    REQUIRE_FALSE(layer.has_name("long_name"));
+    std::string namestr{name};
+    REQUIRE(layer.has_name(namestr));
+    namestr[1] = 'a';
+    REQUIRE_FALSE(layer.has_name(namestr));
+    namestr.append("x");
+    REQUIRE_FALSE(layer.has_name(namestr));
 }
 
 TEST_CASE("Set name using buffer") {
@@ -86,8 +88,8 @@ TEST_CASE("Set name using buffer") {
 
     tgd_header::layer layer;
     layer.set_name(std::move(buffer));
-    REQUIRE(layer.name_length() == 13);
-    REQUIRE(buffer_is_equal(layer.name(), name));
+    REQUIRE(layer.name_length() == 12);
+    REQUIRE(layer.has_name(name));
 }
 
 TEST_CASE("Set name using ptr and length") {
@@ -95,8 +97,15 @@ TEST_CASE("Set name using ptr and length") {
 
     tgd_header::layer layer;
     layer.set_name(name, sizeof(name));
-    REQUIRE(layer.name_length() == 7);
-    REQUIRE(buffer_is_equal(layer.name(), name));
+    REQUIRE(layer.name_length() == 6);
+    REQUIRE(layer.has_name(name));
+}
+
+static bool buffer_is_equal(const tgd_header::buffer& buf, const char* str) noexcept {
+    if (buf.size() != std::strlen(str) + 1) {
+        return false;
+    }
+    return !std::strcmp(buf.data(), str);
 }
 
 TEST_CASE("Set content using buffer") {

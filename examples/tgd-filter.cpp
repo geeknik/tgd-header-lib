@@ -58,7 +58,7 @@ public:
         if (m_type != tgd_header::layer_content_type::unknown && m_type != layer.content_type()) {
             return false;
         }
-        if (!m_name.empty() && m_name != layer.name().data()) {
+        if (!m_name.empty() && !layer.has_name(m_name)) {
             return false;
         }
 
@@ -153,7 +153,7 @@ int main(int argc, char *argv[]) {
     while (auto& layer = reader.next_layer()) {
         if (verbose) {
             std::cout << "Considering layer '"
-                      << layer.name().data()
+                      << layer.name()
                       << "' of type "
                       << layer.content_type()
                       << " in tile "

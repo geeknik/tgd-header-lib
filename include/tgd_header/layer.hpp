@@ -44,6 +44,8 @@ namespace tgd_header {
 
         // XXX make sure that when this is set, there is always a zero-byte
         // at the end.
+
+        // The layer name. Must always have at least one '\0' byte at the end.
         buffer m_name{};
 
         buffer m_content{};
@@ -51,8 +53,15 @@ namespace tgd_header {
 
         // XXX can we make sure that these are not too long internally, so
         // the user doesn't have to?
+
+        // The length of the name (not including the '\0' at the end).
         name_length_type m_name_length = 0;
+
+        // The length of the content as set by the user of the library
         content_length_type m_content_length = 0;
+
+        // The length of the content in its encoded form. May be different
+        // from m_content_length if compression is used.
         content_length_type m_wire_content_length = 0;
 
         tile_address m_tile{};
@@ -200,30 +209,50 @@ namespace tgd_header {
             return m_name_length;
         }
 
-        const buffer& name() const noexcept {
-            return m_name;
+        const char* name() const noexcept {
+            return m_name.data();
+        }
+
+        bool has_name(const std::string& str) const noexcept {
+            if (m_name_length != str.size()) {
+                return false;
+            }
+            return !std::memcmp(m_name.data(), str.data(), m_name_length);
+        }
+
+        bool has_name(const char* str) const noexcept {
+            return !std::strcmp(m_name.data(), str);
         }
 
         void set_name_internal(buffer&& buffer) {
+            assert(buffer.size() > 0);
+            assert(*(buffer.data() + buffer.size() - 1) == '\0');
             m_name = std::move(buffer);
         }
 
+        // XXX must have \0 at the end
         void set_name(buffer&& buffer) {
-            m_name_length = static_cast<name_length_type>(buffer.size());
+            assert(buffer.size() > 0);
+            assert(*(buffer.data() + buffer.size() - 1) == '\0');
+            m_name_length = static_cast<name_length_type>(std::strlen(buffer.data()));
             m_name = std::move(buffer);
         }
 
+        // XXX must have \0 at the end and included in the length
         void set_name(const char* name, std::size_t length) {
-            m_name_length = static_cast<name_length_type>(length);
+            assert(length > 0);
+            assert(name[length - 1 ] == '\0');
+            m_name_length = static_cast<name_length_type>(length - 1);
             m_name = buffer{name, length};
         }
 
         void set_name(const char* name) {
-            const auto length = std::strlen(name) + 1;
+            const auto length = std::strlen(name);
             if (length >= std::numeric_limits<name_length_type>::max()) {
                 throw format_error{"name too long"};
             }
-            set_name(name, length);
+            m_name_length = static_cast<name_length_type>(length);
+            m_name = buffer{name, length + 1};
         }
 
         content_length_type content_length() const noexcept {
@@ -298,6 +327,7 @@ namespace tgd_header {
             const auto header = serialize_header();
             sink.write(buffer{header});
 
+            assert(m_name_length > 0);
             sink.write(m_name);
             sink.padding(detail::padding(m_name.size()));
 
