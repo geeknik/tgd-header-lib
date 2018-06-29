@@ -45,6 +45,14 @@ static std::pair<std::string, std::string> split_filename(const std::string& fil
     return file;
 }
 
+static std::string basename(std::string filename) {
+    const auto slash = filename.find_last_of('/');
+    if (slash != std::string::npos) {
+        filename.erase(0, slash + 1);
+    }
+    return filename;
+}
+
 /**
  * Read complete contents of the specified file into a buffer.
  */
@@ -74,7 +82,8 @@ static void write_layer(const std::string& filename, tgd_header::file_sink& outp
         layer.set_compression_type(compression);
     }
 
-    layer.set_name(tgd_header::buffer{f.first.data(), f.first.size()});
+    const auto layer_name = basename(f.first);
+    layer.set_name(tgd_header::buffer{layer_name.data(), layer_name.size()});
 
     layer.set_tile(tile);
 

@@ -22,12 +22,12 @@ target_link_libraries(tgd-info ${ZLIB_LIBRARIES})
 
 #-----------------------------------------------------------------------------
 
-set(HELP_TESTS cat
-               export
-               filter
-               info)
+set(_commands cat
+              export
+              filter
+              info)
 
-foreach(example ${HELP_TESTS})
+foreach(example ${_commands})
 
     add_test(NAME example_${example}_help COMMAND tgd-${example} -h)
 
@@ -39,11 +39,11 @@ foreach(example ${HELP_TESTS})
 
 endforeach()
 
-file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/test-a.png" "A")
-file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/test-b.mvt" "B")
-file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/test-c.jpg" "C")
+#-----------------------------------------------------------------------------
 
-add_test(NAME example_cat_create COMMAND tgd-cat test-a.png test-b.mvt test-c.jpg -o test-tile.tgd)
+set(TESTDATA "${CMAKE_SOURCE_DIR}/test/data")
+
+add_test(NAME example_cat_create COMMAND tgd-cat ${TESTDATA}/test-a.png ${TESTDATA}/test-b.mvt ${TESTDATA}/test-c.jpg -o test-tile.tgd)
 
 add_test(NAME example_info_all COMMAND tgd-info test-tile.tgd)
 set_tests_properties(example_info_all PROPERTIES PASS_REGULAR_EXPRESSION "^LAYER test-a\n")
