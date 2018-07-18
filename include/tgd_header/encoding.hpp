@@ -19,6 +19,7 @@ more documentation.
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <type_traits>
 
 #define TGD_HEADER_LITTLE_ENDIAN 1234
 #define TGD_HEADER_BIG_ENDIAN    4321
@@ -81,6 +82,10 @@ namespace tgd_header {
 #endif
         }
 
+        inline void byteswap_inplace(uint8_t* /*ptr*/) noexcept {
+            // intentionally left blank
+        }
+
         inline void byteswap_inplace(uint16_t* ptr) noexcept {
             *ptr = byteswap_impl(*ptr);
         }
@@ -101,6 +106,12 @@ namespace tgd_header {
         inline void byteswap_inplace(int64_t* ptr) noexcept {
             auto bptr = reinterpret_cast<uint64_t*>(ptr); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
             *bptr = byteswap_impl(*bptr);
+        }
+
+        template <typename T, typename = typename std::enable_if<std::is_enum<T>::value>::type>
+        void byteswap_inplace(T* ptr) noexcept {
+            using ut = typename std::underlying_type<T>::type;
+            byteswap_inplace(reinterpret_cast<ut*>(ptr));
         }
 
         constexpr const std::uint64_t align_bytes = 8;
@@ -137,7 +148,7 @@ namespace tgd_header {
          * If necessary the byte order is taken into account.
          */
         template <typename T>
-        void set(const T value, char* output) noexcept {
+        void set(T value, char* output) noexcept {
 #if TGD_HEADER_BYTE_ORDER != TGD_HEADER_LITTLE_ENDIAN
             detail::byteswap_inplace(&value);
 #endif
