@@ -144,8 +144,6 @@ namespace tgd_header {
             std::copy_n(reinterpret_cast<const char*>(&value), sizeof(value), output); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
         }
 
-        constexpr const std::uint64_t header_size = 40;
-
         // XXX this is preliminary and needs to be optimized
         enum offset : std::size_t {
             content_type     =  4,
@@ -156,8 +154,11 @@ namespace tgd_header {
             tile_x           = 12,
             tile_y           = 16,
             original_length  = 24,
-            content_length   = 32
+            content_length   = 28,
+            end              = 32
         };
+
+        constexpr const std::uint64_t header_size = offset::end;
 
     } // end namespace detail
 

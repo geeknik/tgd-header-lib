@@ -102,7 +102,11 @@ namespace tgd_header {
                 throw zlib_error{std::string{"failed to compress data: "} + zError(result)};
             }
 
-            m_wire_content_length = output_size;
+            if (output_size > std::numeric_limits<content_length_type>::max()) {
+                throw zlib_error{"content too large for tile"};
+            }
+
+            m_wire_content_length = static_cast<content_length_type>(output_size);
             m_wire_content = buffer{std::move(output)};
         }
 

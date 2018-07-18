@@ -44,7 +44,7 @@ namespace tgd_header {
 
     using name_length_type = std::uint16_t;
 
-    using content_length_type = std::uint64_t;
+    using content_length_type = std::uint32_t;
 
 } // namespace tgd_header
 
