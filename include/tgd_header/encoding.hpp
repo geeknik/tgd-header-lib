@@ -111,7 +111,7 @@ namespace tgd_header {
         template <typename T, typename = typename std::enable_if<std::is_enum<T>::value>::type>
         void byteswap_inplace(T* ptr) noexcept {
             using ut = typename std::underlying_type<T>::type;
-            byteswap_inplace(reinterpret_cast<ut*>(ptr));
+            byteswap_inplace(reinterpret_cast<ut*>(ptr)); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
         }
 
         constexpr const std::uint64_t align_bytes = 8;

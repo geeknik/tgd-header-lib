@@ -201,7 +201,7 @@ TEST_CASE("Length of compressed content is too large") {
     auto out = create_test_layer();
 
     // corrupt the original_length field
-    tgd_header::detail::set<tgd_header::content_length_type>(sizeof(content) + 1, &out[tgd_header::detail::offset::original_length]);
+    tgd_header::detail::set<tgd_header::content_length_type>(static_cast<tgd_header::content_length_type>(sizeof(content) + 1), &out[tgd_header::detail::offset::original_length]);
 
     // decode layer again and check it
     tgd_header::buffer b{out.data(), out.size()};
@@ -218,7 +218,7 @@ TEST_CASE("Length of compressed content is too small") {
     auto out = create_test_layer();
 
     // corrupt the original_length field
-    tgd_header::detail::set<tgd_header::content_length_type>(sizeof(content) - 1, &out[tgd_header::detail::offset::original_length]);
+    tgd_header::detail::set<tgd_header::content_length_type>(static_cast<tgd_header::content_length_type>(sizeof(content) - 1), &out[tgd_header::detail::offset::original_length]);
 
     // decode layer again and check it
     tgd_header::buffer b{out.data(), out.size()};
