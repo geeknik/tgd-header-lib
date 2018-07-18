@@ -6,8 +6,6 @@
 #
 #-----------------------------------------------------------------------------
 
-include_directories(SYSTEM "${CMAKE_SOURCE_DIR}/include-external")
-
 add_executable(tgd-cat tgd-cat.cpp)
 target_link_libraries(tgd-cat ${ZLIB_LIBRARIES})
 

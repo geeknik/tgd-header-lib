@@ -6,7 +6,6 @@
 #
 #-----------------------------------------------------------------------------
 
-include_directories(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/catch")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 set(TEST_SOURCES buffer
